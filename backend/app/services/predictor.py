@@ -43,12 +43,14 @@ def get_seasons_summary(db: DBSession) -> list[SeasonSummary]:
     """Retrieve distinct seasons with race counts."""
     query = text("""
         SELECT s.year,
-               COUNT(s.session_key) AS total_races,
-               SUM(CASE WHEN r.position IS NOT NULL THEN 1 ELSE 0 END) / 20 AS completed_races
+               COUNT(DISTINCT s.session_key) AS total_races,
+               COUNT(DISTINCT CASE WHEN r.position IS NOT NULL THEN s.session_key END) AS completed_races
         FROM sessions s
+        JOIN drivers d ON s.session_key = d.session_key
         LEFT JOIN session_results r ON s.session_key = r.session_key
         WHERE s.session_name = 'Race'
         GROUP BY s.year
+        HAVING COUNT(DISTINCT d.driver_number) >= 10
         ORDER BY s.year DESC
     """)
     rows = db.execute(query).fetchall()
@@ -58,7 +60,7 @@ def get_seasons_summary(db: DBSession) -> list[SeasonSummary]:
             SeasonSummary(
                 year=int(r[0]),
                 total_races=int(r[1]),
-                completed_races=max(0, int(r[2] or 0)),
+                completed_races=int(r[2] or 0),
             )
         )
     return summaries
@@ -69,12 +71,15 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
     query = text("""
         SELECT s.session_key, s.meeting_key, m.meeting_name, m.circuit_short_name,
                m.country_name, s.date_start, s.year,
-               COUNT(r.position) AS result_count
+               COUNT(DISTINCT r.position) AS result_count,
+               COUNT(DISTINCT d.driver_number) AS driver_count
         FROM sessions s
         JOIN meetings m ON s.meeting_key = m.meeting_key
+        JOIN drivers d ON s.session_key = d.session_key
         LEFT JOIN session_results r ON s.session_key = r.session_key
         WHERE s.session_name = 'Race' AND s.year = :year
         GROUP BY s.session_key
+        HAVING COUNT(DISTINCT d.driver_number) >= 10
         ORDER BY s.date_start ASC
     """)
     rows = db.execute(query, {"year": year}).fetchall()
@@ -83,8 +88,9 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
     for r in rows:
         s_key = int(r[0])
         m_key = int(r[1])
+        s_date = str(r[5] or "")
         res_count = int(r[7] or 0)
-        is_completed = res_count >= 10
+        is_completed = res_count >= 10 or (int(r[6]) < 2026)
 
         # Predicted podium (P1, P2, P3)
         pred_query = text("""
