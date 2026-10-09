@@ -20,9 +20,7 @@ def test_predictor_determinism():
     model_b = bundle["model_b"]
     calibrator = bundle["calibrator"]
 
-    sample_x = pd.DataFrame(
-        [[1.0] * len(FEATURE_COLS)], columns=FEATURE_COLS
-    )
+    sample_x = pd.DataFrame([[1.0] * len(FEATURE_COLS)], columns=FEATURE_COLS)
 
     pred1 = model_a.predict(sample_x)
     pred2 = model_a.predict(sample_x)

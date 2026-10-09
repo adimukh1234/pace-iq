@@ -45,7 +45,7 @@ def load_raw_json(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
             return data if isinstance(data, list) else [data]
     except (json.JSONDecodeError, OSError) as e:

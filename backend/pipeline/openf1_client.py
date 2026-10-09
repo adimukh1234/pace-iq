@@ -95,7 +95,7 @@ class OpenF1Client:
         # Cache check
         if cache_file.exists() and not refresh:
             try:
-                with open(cache_file, "r", encoding="utf-8") as f:
+                with open(cache_file, encoding="utf-8") as f:
                     return json.load(f)
             except (json.JSONDecodeError, OSError) as e:
                 logger.warning(f"Corrupt cache file {cache_file}, refetching: {e}")

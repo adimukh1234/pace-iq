@@ -7,7 +7,7 @@ Complies with IMPLEMENTATION_RULES.md (Rules 1-7, 56-57) and TECH_SPEC.md §4.
 import argparse
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # Ensure project root is in sys.path
@@ -39,13 +39,13 @@ def ingest_all(
     """
     Main ingestion routine. Idempotent: checks cache before making any HTTP requests.
     """
-    run_timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    run_timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     log_file = LOGS_DIR / f"ingest_{run_timestamp}.txt"
     log_lines: list[str] = []
 
     def log(msg: str):
         logger.info(msg)
-        log_lines.append(f"{datetime.now(timezone.utc).isoformat()} - {msg}")
+        log_lines.append(f"{datetime.now(UTC).isoformat()} - {msg}")
 
     log(f"Starting PaceIQ Ingestion for seasons: {seasons}")
     client = OpenF1Client(raw_data_dir=RAW_DATA_DIR)

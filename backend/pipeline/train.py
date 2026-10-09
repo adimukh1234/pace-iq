@@ -8,7 +8,7 @@ Complies with TECH_SPEC.md §7 and IMPLEMENTATION_RULES.md (Rules 10-15, 24-27).
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -52,9 +52,7 @@ class TreeAttributionExplainer:
             for col, imp in zip(X_train.columns, importances)
         }
 
-    def explain_row(
-        self, row: pd.Series, pred_val: float
-    ) -> list[dict[str, Any]]:
+    def explain_row(self, row: pd.Series, pred_val: float) -> list[dict[str, Any]]:
         contributions = []
         for col, val in row.items():
             mean = self.feature_means.get(col, 0.0)
@@ -72,6 +70,7 @@ class TreeAttributionExplainer:
                 }
             )
         return contributions
+
 
 FEATURE_COLS = [
     "grid_position",
@@ -123,46 +122,41 @@ def split_data(
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Chronological Split (Rule 10):
-    - Train: 2024 races
-    - Validation: First half of 2025 races
-    - Test: Second half of 2025 races
+    Prior races for train, intermediate for validation, and latest for holdout test.
     """
-    df_2024 = df[df["year"] == 2024].copy()
-    df_2025 = df[df["year"] == 2025].copy()
+    sorted_df = df.sort_values("date_start")
+    race_keys = sorted_df["session_key"].drop_duplicates().tolist()
+    n = len(race_keys)
 
-    # If small test set or early season data, ensure valid split
-    if df_2025.empty:
-        # Split 2024 chronologically 70% train, 15% val, 15% test
-        race_keys = df_2024["session_key"].drop_duplicates().tolist()
-        n = len(race_keys)
-        n_train = max(1, int(n * 0.7))
-        n_val = max(1, int(n * 0.15))
+    if n >= 4:
+        n_train = max(1, int(n * 0.65))
         train_keys = race_keys[:n_train]
-        val_keys = race_keys[n_train : n_train + n_val]
-        test_keys = race_keys[n_train + n_val :]
-        train_df = df_2024[df_2024["session_key"].isin(train_keys)]
-        val_df = df_2024[df_2024["session_key"].isin(val_keys)]
-        test_df = df_2024[df_2024["session_key"].isin(test_keys)]
+        val_keys = race_keys[n_train:-1]
+        test_keys = [race_keys[-1]]
+    elif n == 3:
+        train_keys = [race_keys[0]]
+        val_keys = [race_keys[1]]
+        test_keys = [race_keys[2]]
+    elif n == 2:
+        train_keys = [race_keys[0]]
+        val_keys = [race_keys[0]]
+        test_keys = [race_keys[1]]
     else:
-        race_keys_2025 = df_2025["session_key"].drop_duplicates().tolist()
-        mid = max(1, len(race_keys_2025) // 2)
-        val_keys = race_keys_2025[:mid]
-        test_keys = race_keys_2025[mid:]
+        train_keys = race_keys
+        val_keys = race_keys
+        test_keys = race_keys
 
-        train_df = df_2024
-        val_df = df_2025[df_2025["session_key"].isin(val_keys)]
-        test_df = (
-            df_2025[df_2025["session_key"].isin(test_keys)]
-            if test_keys
-            else val_df
-        )
-
+    train_df = df[df["session_key"].isin(train_keys)]
+    val_df = df[df["session_key"].isin(val_keys)]
+    test_df = df[df["session_key"].isin(test_keys)]
     return train_df, val_df, test_df
 
 
 def train_models(
     train_df: pd.DataFrame, val_df: pd.DataFrame
-) -> tuple[lgb.LGBMRegressor, lgb.LGBMClassifier, IsotonicRegression, TreeAttributionExplainer]:
+) -> tuple[
+    lgb.LGBMRegressor, lgb.LGBMClassifier, IsotonicRegression, TreeAttributionExplainer
+]:
     """
     Train Model A (Regressor), Model B (Classifier), Isotonic Calibrator, and Explainer.
     """
@@ -236,7 +230,7 @@ def generate_and_save_predictions(
     cal_probs = calibrator.transform(raw_probs)
 
     prediction_records: list[Prediction] = []
-    created_at = datetime.now(timezone.utc).isoformat()
+    created_at = datetime.now(UTC).isoformat()
 
     # Group by race to rank 1..20
     df["raw_pred_pos"] = raw_pos
@@ -289,7 +283,6 @@ def generate_and_save_predictions(
                     created_at=created_at,
                 )
             )
-
 
     if prediction_records:
         db.bulk_save_objects(prediction_records)
@@ -345,9 +338,7 @@ def main():
 
         model_a, model_b, calibrator, explainer = train_models(train_df, val_df)
         save_artefacts(model_a, model_b, calibrator)
-        generate_and_save_predictions(
-            df, model_a, model_b, calibrator, explainer, db
-        )
+        generate_and_save_predictions(df, model_a, model_b, calibrator, explainer, db)
 
     finally:
         db.close()
