@@ -1,0 +1,31 @@
+{
+  "schema_version": "v1",
+  "features": [
+    "grid_position",
+    "quali_gap_to_pole_s",
+    "quali_gap_to_pole_pct",
+    "quali_gap_to_teammate_s",
+    "practice_pace_index",
+    "longrun_pace_s",
+    "longrun_pace_rel_s",
+    "deg_slope_s_per_lap",
+    "driver_form_5",
+    "team_form_5",
+    "driver_circuit_avg",
+    "team_circuit_avg",
+    "track_temp_c",
+    "rain_flag",
+    "grid_position_missing",
+    "quali_gap_to_pole_s_missing",
+    "practice_pace_index_missing",
+    "longrun_pace_s_missing",
+    "deg_slope_s_per_lap_missing",
+    "driver_form_5_missing",
+    "team_form_5_missing",
+    "driver_circuit_avg_missing",
+    "team_circuit_avg_missing",
+    "track_temp_c_missing"
+  ],
+  "target_position": "int (1-20)",
+  "target_podium": "int (0 or 1)"
+}

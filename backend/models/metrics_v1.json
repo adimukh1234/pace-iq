@@ -1,0 +1,22 @@
+{
+  "grid_baseline": {
+    "spearman": 0.56,
+    "mae": 2.71,
+    "top3_accuracy": 0.667,
+    "brier_score": null
+  },
+  "team_form_baseline": {
+    "spearman": 0.446,
+    "mae": 3.57,
+    "top3_accuracy": 0.333,
+    "brier_score": null
+  },
+  "paceiq_v1": {
+    "spearman": 0.508,
+    "mae": 2.71,
+    "top3_accuracy": 0.667,
+    "brier_score": 0.15
+  },
+  "test_races_count": 1,
+  "evaluated_at": "2026-10-09T07:10:11.143817+00:00"
+}
