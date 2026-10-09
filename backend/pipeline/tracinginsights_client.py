@@ -31,13 +31,53 @@ RAW_TI_DIR.mkdir(parents=True, exist_ok=True)
 
 GITHUB_RAW_BASE = "https://raw.githubusercontent.com/TracingInsights"
 
-# Circuit metadata lookup
+# Circuit metadata lookup with official 2026 Grand Prix dates
 CIRCUIT_LOOKUP = {
-    "Bahrain Grand Prix": {"short_name": "Sakhir", "country": "Bahrain", "m_key": 202601},
-    "Saudi Arabian Grand Prix": {"short_name": "Jeddah", "country": "Saudi Arabia", "m_key": 202602},
-    "Australian Grand Prix": {"short_name": "Melbourne", "country": "Australia", "m_key": 202603},
-    "Japanese Grand Prix": {"short_name": "Suzuka", "country": "Japan", "m_key": 202604},
-    "Chinese Grand Prix": {"short_name": "Shanghai", "country": "China", "m_key": 202605},
+    "Bahrain Grand Prix": {
+        "short_name": "Sakhir",
+        "country": "Bahrain",
+        "m_key": 202601,
+        "meeting_date": "2026-02-27T10:00:00+00:00",
+        "race_date": "2026-03-01T15:00:00+00:00",
+        "quali_date": "2026-02-28T16:00:00+00:00",
+        "fp_date": "2026-02-27T11:30:00+00:00",
+    },
+    "Saudi Arabian Grand Prix": {
+        "short_name": "Jeddah",
+        "country": "Saudi Arabia",
+        "m_key": 202602,
+        "meeting_date": "2026-03-06T10:00:00+00:00",
+        "race_date": "2026-03-08T17:00:00+00:00",
+        "quali_date": "2026-03-07T17:00:00+00:00",
+        "fp_date": "2026-03-06T13:30:00+00:00",
+    },
+    "Australian Grand Prix": {
+        "short_name": "Melbourne",
+        "country": "Australia",
+        "m_key": 202603,
+        "meeting_date": "2026-03-20T01:00:00+00:00",
+        "race_date": "2026-03-22T04:00:00+00:00",
+        "quali_date": "2026-03-21T05:00:00+00:00",
+        "fp_date": "2026-03-20T01:30:00+00:00",
+    },
+    "Japanese Grand Prix": {
+        "short_name": "Suzuka",
+        "country": "Japan",
+        "m_key": 202604,
+        "meeting_date": "2026-04-03T02:00:00+00:00",
+        "race_date": "2026-04-05T05:00:00+00:00",
+        "quali_date": "2026-04-04T06:00:00+00:00",
+        "fp_date": "2026-04-03T02:30:00+00:00",
+    },
+    "Chinese Grand Prix": {
+        "short_name": "Shanghai",
+        "country": "China",
+        "m_key": 202605,
+        "meeting_date": "2026-04-17T03:00:00+00:00",
+        "race_date": "2026-04-19T07:00:00+00:00",
+        "quali_date": "2026-04-18T07:00:00+00:00",
+        "fp_date": "2026-04-17T03:30:00+00:00",
+    },
 }
 
 
@@ -88,8 +128,21 @@ class TracingInsightsClient:
     ) -> bool:
         """Ingest complete Grand Prix weekend from TracingInsights into SQLite."""
         circuit_info = CIRCUIT_LOOKUP.get(
-            gp_name, {"short_name": gp_name.split()[0], "country": "International", "m_key": meeting_key}
+            gp_name, {
+                "short_name": gp_name.split()[0],
+                "country": "International",
+                "m_key": meeting_key,
+                "meeting_date": f"{year}-03-01T10:00:00+00:00",
+                "race_date": f"{year}-03-02T15:00:00+00:00",
+                "quali_date": f"{year}-03-01T16:00:00+00:00",
+                "fp_date": f"{year}-03-01T12:00:00+00:00",
+            }
         )
+
+        meeting_date = circuit_info.get("meeting_date", f"{year}-03-01T10:00:00+00:00")
+        race_date = circuit_info.get("race_date", f"{year}-03-02T15:00:00+00:00")
+        quali_date = circuit_info.get("quali_date", f"{year}-03-01T16:00:00+00:00")
+        fp_date = circuit_info.get("fp_date", f"{year}-03-01T12:00:00+00:00")
 
         # 1. Upsert Meeting
         existing_meeting = db.query(Meeting).filter(Meeting.meeting_key == meeting_key).first()
@@ -100,24 +153,27 @@ class TracingInsightsClient:
                 circuit_short_name=circuit_info["short_name"],
                 country_name=circuit_info["country"],
                 year=year,
-                date_start=f"{year}-03-01T10:00:00+00:00",
+                date_start=meeting_date,
             )
             db.add(meeting)
             db.commit()
+        else:
+            existing_meeting.date_start = meeting_date
+            db.commit()
 
         sessions_to_load = [
-            ("Practice 1", "Practice", meeting_key * 10 + 1),
-            ("Practice 2", "Practice", meeting_key * 10 + 2),
-            ("Practice 3", "Practice", meeting_key * 10 + 3),
-            ("Qualifying", "Qualifying", meeting_key * 10 + 4),
-            ("Race", "Race", meeting_key * 10 + 5),
+            ("Practice 1", "Practice", meeting_key * 10 + 1, fp_date),
+            ("Practice 2", "Practice", meeting_key * 10 + 2, fp_date),
+            ("Practice 3", "Practice", meeting_key * 10 + 3, fp_date),
+            ("Qualifying", "Qualifying", meeting_key * 10 + 4, quali_date),
+            ("Race", "Race", meeting_key * 10 + 5, race_date),
         ]
 
         drivers_map: dict[int, dict[str, Any]] = {}
         race_laptimes_df: pd.DataFrame | None = None
         quali_laptimes_df: pd.DataFrame | None = None
 
-        for sess_name, sess_type, sess_key in sessions_to_load:
+        for sess_name, sess_type, sess_key, s_date in sessions_to_load:
             # Upsert Session record
             sess_obj = db.query(Session).filter(Session.session_key == sess_key).first()
             if not sess_obj:
@@ -126,10 +182,13 @@ class TracingInsightsClient:
                     meeting_key=meeting_key,
                     session_name=sess_name,
                     session_type=sess_type,
-                    date_start=f"{year}-03-02T15:00:00+00:00" if sess_type == "Race" else f"{year}-03-01T12:00:00+00:00",
+                    date_start=s_date,
                     year=year,
                 )
                 db.add(sess_obj)
+                db.commit()
+            else:
+                sess_obj.date_start = s_date
                 db.commit()
 
             # Load drivers
