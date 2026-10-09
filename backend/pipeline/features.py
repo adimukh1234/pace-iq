@@ -100,9 +100,7 @@ def compute_qualifying_features(
 
     pole_lap = df["best_lap"].min()
     df["quali_gap_to_pole_s"] = df["best_lap"] - pole_lap
-    df["quali_gap_to_pole_pct"] = (
-        df["quali_gap_to_pole_s"] / pole_lap
-    ) * 100.0
+    df["quali_gap_to_pole_pct"] = (df["quali_gap_to_pole_s"] / pole_lap) * 100.0
 
     # Teammate gap
     teammate_gaps = []
@@ -140,9 +138,7 @@ def compute_practice_pace_and_degradation(
     sessions = get_meeting_practice_qualifying_sessions(
         meeting_key, target_race_date, db
     )
-    practice_sessions = sessions[
-        sessions["session_name"].str.startswith("Practice")
-    ]
+    practice_sessions = sessions[sessions["session_name"].str.startswith("Practice")]
     if practice_sessions.empty:
         return pd.DataFrame()
 
@@ -177,9 +173,7 @@ def compute_practice_pace_and_degradation(
         d_clean = laps_df[laps_df["driver_number"] == d]["lap_duration"]
         if not d_clean.empty:
             fastest_medians.append(d_clean.median())
-    session_fastest_median = (
-        min(fastest_medians) if fastest_medians else 90.0
-    )
+    session_fastest_median = min(fastest_medians) if fastest_medians else 90.0
 
     for d in drivers:
         d_laps = laps_df[laps_df["driver_number"] == d]
@@ -194,14 +188,12 @@ def compute_practice_pace_and_degradation(
 
         # 2. Long-run pace (median of clean laps in stints >= 5 clean laps, Rule 17)
         longrun_laps = []
-        for (sess_id, stint_id), stint_group in d_laps.groupby(
+        for (_sess_id, _stint_id), stint_group in d_laps.groupby(
             ["session_key", "stint_number"]
         ):
             if len(stint_group) >= 5:
                 longrun_laps.extend(stint_group["lap_duration"].tolist())
-        longrun_pace = (
-            float(np.median(longrun_laps)) if longrun_laps else np.nan
-        )
+        longrun_pace = float(np.median(longrun_laps)) if longrun_laps else np.nan
 
         # 3. Tyre degradation slope (Rule 18: OLS slope of clean lap time vs tyre age, >= 5 points)
         deg_slope = np.nan
@@ -211,8 +203,8 @@ def compute_practice_pace_and_degradation(
             comp_laps = d_laps[d_laps["compound"] == primary_compound].copy()
             if len(comp_laps) >= 5:
                 # Tyre age = tyre_age_at_start + (lap_number - stint_lap_start)
-                comp_laps["tyre_age"] = (
-                    comp_laps["tyre_age_at_start"] + np.arange(len(comp_laps))
+                comp_laps["tyre_age"] = comp_laps["tyre_age_at_start"] + np.arange(
+                    len(comp_laps)
                 )
                 x = comp_laps["tyre_age"].values
                 y = comp_laps["lap_duration"].values
@@ -232,9 +224,7 @@ def compute_practice_pace_and_degradation(
     res_df = pd.DataFrame(results)
     if not res_df.empty and "longrun_pace_s" in res_df:
         field_median_longrun = res_df["longrun_pace_s"].median()
-        res_df["longrun_pace_rel_s"] = (
-            res_df["longrun_pace_s"] - field_median_longrun
-        )
+        res_df["longrun_pace_rel_s"] = res_df["longrun_pace_s"] - field_median_longrun
     else:
         res_df["longrun_pace_rel_s"] = np.nan
 
@@ -293,9 +283,7 @@ def compute_historical_form(
     records = []
     for d in drivers:
         # Get team name for driver
-        t_name = prior_results[prior_results["driver_number"] == d][
-            "team_name"
-        ].iloc[0]
+        t_name = prior_results[prior_results["driver_number"] == d]["team_name"].iloc[0]
         records.append(
             {
                 "driver_number": d,
@@ -316,9 +304,7 @@ def compute_weather_features(
     sessions = get_meeting_practice_qualifying_sessions(
         meeting_key, target_race_date, db
     )
-    practice_sessions = sessions[
-        sessions["session_name"].str.startswith("Practice")
-    ]
+    practice_sessions = sessions[sessions["session_name"].str.startswith("Practice")]
     if practice_sessions.empty:
         return 30.0, 0
 
@@ -383,17 +369,13 @@ def build_features_for_race(race_row: pd.Series, db: DBSession) -> list[Feature]
     quali_df = compute_qualifying_features(meeting_key, date_start, db)
 
     # 5. Practice pace & degradation
-    practice_df = compute_practice_pace_and_degradation(
-        meeting_key, date_start, db
-    )
+    practice_df = compute_practice_pace_and_degradation(meeting_key, date_start, db)
 
     # 6. Historical rolling form
     form_df = compute_historical_form(date_start, circuit_name, db)
 
     # 7. Weather
-    track_temp, rain_flag = compute_weather_features(
-        meeting_key, date_start, db
-    )
+    track_temp, rain_flag = compute_weather_features(meeting_key, date_start, db)
 
     # Merge all into driver frame
     merged = drivers_df.merge(grid_df, on="driver_number", how="left")

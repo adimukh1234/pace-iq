@@ -8,7 +8,7 @@ Complies with TECH_SPEC.md §7.1 and IMPLEMENTATION_RULES.md (Rules 12-13).
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -38,9 +38,7 @@ logging.basicConfig(
 )
 
 
-def evaluate_ranking(
-    actual: list[int], predicted: list[int]
-) -> dict[str, float]:
+def evaluate_ranking(actual: list[int], predicted: list[int]) -> dict[str, float]:
     """Calculate Spearman correlation and MAE between predicted and actual rankings."""
     if len(actual) < 2:
         return {"spearman": 1.0, "mae": 0.0, "top3_acc": 1.0}
@@ -52,14 +50,12 @@ def evaluate_ranking(
     mae = float(mean_absolute_error(actual, predicted))
 
     # Top-3 set accuracy
-    actual_top3 = {
-        d for d, pos in zip(range(len(actual)), actual) if pos <= 3
-    }
-    pred_top3 = {
-        d for d, pos in zip(range(len(predicted)), predicted) if pos <= 3
-    }
+    actual_top3 = {d for d, pos in zip(range(len(actual)), actual) if pos <= 3}
+    pred_top3 = {d for d, pos in zip(range(len(predicted)), predicted) if pos <= 3}
     overlap = len(actual_top3.intersection(pred_top3))
-    top3_acc = overlap / 3.0 if len(actual_top3) >= 3 else (overlap / max(1, len(actual_top3)))
+    top3_acc = (
+        overlap / 3.0 if len(actual_top3) >= 3 else (overlap / max(1, len(actual_top3)))
+    )
 
     return {
         "spearman": float(corr),
@@ -86,7 +82,7 @@ def evaluate_split(
 
     races = test_df.groupby("session_key")
 
-    for session_key, race_df in races:
+    for _session_key, race_df in races:
         valid_df = race_df[race_df["target_position"].notnull()]
         if len(valid_df) < 5:
             continue
@@ -147,7 +143,7 @@ def evaluate_split(
             "brier_score": round(brier, 4),
         },
         "test_races_count": len(races),
-        "evaluated_at": datetime.now(timezone.utc).isoformat(),
+        "evaluated_at": datetime.now(UTC).isoformat(),
     }
 
     return results
@@ -183,9 +179,7 @@ def print_comparison_table(results: dict[str, Any]) -> None:
 def main():
     artefact_path = MODELS_DIR / "paceiq_v1.joblib"
     if not artefact_path.exists():
-        logger.error(
-            f"Artefact {artefact_path} not found. Run 'make train' first."
-        )
+        logger.error(f"Artefact {artefact_path} not found. Run 'make train' first.")
         return
 
     model_bundle = joblib.load(artefact_path)
