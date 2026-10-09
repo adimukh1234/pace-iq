@@ -1,11 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Calendar, MapPin, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { MapPin, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
 import type { RaceListItem } from "../types";
 
-export const RaceCard: React.FC<{ race: RaceListItem; roundIndex: number }> = ({
+export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = ({
   race,
-  roundIndex,
 }) => {
   const isCompleted = race.status === "completed";
 
@@ -52,12 +51,6 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex: number }> = ({
     );
   };
 
-  const formattedDate = new Date(race.date_start).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-
   return (
     <Link
       to={`/races/${race.session_key}`}
@@ -80,26 +73,15 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex: number }> = ({
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      {/* Top Row: Round & Status */}
+      {/* Top Row: Status Badge */}
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           alignItems: "center",
           marginBottom: "var(--space-2)",
         }}
       >
-        <span
-          style={{
-            fontFamily: "var(--font-data)",
-            fontSize: "var(--type-label)",
-            color: "var(--color-text-muted)",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-          }}
-        >
-          ROUND {roundIndex}
-        </span>
         <span
           style={{
             fontSize: "var(--type-label)",
@@ -135,12 +117,12 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex: number }> = ({
         {race.meeting_name}
       </h3>
 
-      {/* Subtitle: Circuit & Date */}
+      {/* Subtitle: Circuit Location Only */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "var(--space-3)",
+          gap: "var(--space-2)",
           color: "var(--color-text-secondary)",
           fontSize: "var(--type-body-md)",
           marginBottom: "var(--space-4)",
@@ -149,11 +131,6 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex: number }> = ({
         <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
           <MapPin size={14} color="var(--color-accent-teal)" />
           {race.circuit_short_name || race.country_name}
-        </span>
-        <span>•</span>
-        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <Calendar size={14} color="var(--color-text-muted)" />
-          {formattedDate}
         </span>
       </div>
 

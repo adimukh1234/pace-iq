@@ -231,8 +231,8 @@ export const RacesPage: React.FC = () => {
             gap: "var(--space-4)",
           }}
         >
-          {races.map((race, idx) => (
-            <RaceCard key={race.session_key} race={race} roundIndex={idx + 1} />
+          {races.map((race) => (
+            <RaceCard key={race.session_key} race={race} />
           ))}
         </div>
       )}
