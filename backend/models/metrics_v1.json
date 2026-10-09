@@ -1,22 +1,22 @@
 {
   "grid_baseline": {
-    "spearman": 0.821,
-    "mae": 3.23,
-    "top3_accuracy": 0.667,
+    "spearman": 0.837,
+    "mae": 2.06,
+    "top3_accuracy": 1.0,
     "brier_score": null
   },
   "team_form_baseline": {
-    "spearman": 0.353,
-    "mae": 5.41,
-    "top3_accuracy": 0.333,
+    "spearman": 0.558,
+    "mae": 3.83,
+    "top3_accuracy": 0.667,
     "brier_score": null
   },
   "paceiq_v1": {
-    "spearman": 0.817,
-    "mae": 3.32,
-    "top3_accuracy": 1.0,
-    "brier_score": 0.0948
+    "spearman": 0.796,
+    "mae": 2.28,
+    "top3_accuracy": 0.667,
+    "brier_score": 0.0778
   },
   "test_races_count": 1,
-  "evaluated_at": "2026-10-09T08:27:02.948579+00:00"
+  "evaluated_at": "2026-10-09T09:26:15.422337+00:00"
 }

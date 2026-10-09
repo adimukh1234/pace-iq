@@ -40,7 +40,7 @@ logger = logging.getLogger("paceiq.service")
 
 
 def get_seasons_summary(db: DBSession) -> list[SeasonSummary]:
-    """Retrieve distinct seasons with race counts."""
+    """Retrieve distinct seasons to display with active predictions (2026 and 2025)."""
     query = text("""
         SELECT s.year,
                COUNT(DISTINCT s.session_key) AS total_races,
@@ -48,7 +48,7 @@ def get_seasons_summary(db: DBSession) -> list[SeasonSummary]:
         FROM sessions s
         JOIN drivers d ON s.session_key = d.session_key
         LEFT JOIN session_results r ON s.session_key = r.session_key
-        WHERE s.session_name = 'Race'
+        WHERE s.session_name = 'Race' AND s.year IN (2026, 2025)
         GROUP BY s.year
         HAVING COUNT(DISTINCT d.driver_number) >= 10
         ORDER BY s.year DESC
