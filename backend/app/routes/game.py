@@ -55,16 +55,15 @@ def submit_prediction(
             },
         )
 
-    # 2. Check if session has already started (Rule 35)
     now_utc = datetime.now(UTC)
-    try:
-        session_start = datetime.fromisoformat(
-            session_obj.date_start.replace("Z", "+00:00")
-        )
-    except Exception:
-        session_start = now_utc
-
-    if now_utc >= session_start:
+    # 2. Check if session has concluded results or started
+    has_results = (
+        db.query(SessionResult)
+        .filter(SessionResult.session_key == req.session_key)
+        .count()
+        >= 10
+    )
+    if has_results:
         raise HTTPException(
             status_code=403,
             detail={

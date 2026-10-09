@@ -20,6 +20,16 @@
   --color-status-danger: #FF453A;
   --color-status-info: #3671C6;
 
+  /* Aliases & Helpers */
+  --color-background: var(--color-bg-base);
+  --color-surface: var(--color-surface-1);
+  --color-surface-subtle: rgba(255, 255, 255, 0.03);
+  --color-surface-raised: var(--color-surface-2);
+  --color-border: var(--color-surface-outline);
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-accent-cyan: var(--color-accent-teal);
+  --color-accent-green: var(--color-status-success);
+
   /* Telemetry Status Scale */
   --color-temp-cold: #3671C6;
   --color-temp-optimal: #2EE6C5;
@@ -33,6 +43,12 @@
   --color-tyre-hard: #F2F2F2;
   --color-tyre-inter: #34C759;
   --color-tyre-wet: #3671C6;
+
+  --tyre-soft: var(--color-tyre-soft);
+  --tyre-medium: var(--color-tyre-medium);
+  --tyre-hard: var(--color-tyre-hard);
+  --tyre-inter: var(--color-tyre-inter);
+  --tyre-wet: var(--color-tyre-wet);
 
   /* Sector and Lap Colours */
   --color-lap-pb: #34C759;
@@ -50,6 +66,9 @@
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-data: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
+  --font-mono: var(--font-data);
+  --font-sans: var(--font-body);
+
   /* Type Scale */
   --type-display-xl: 2.75rem;
   --type-display-lg: 2.0rem;
@@ -61,6 +80,13 @@
   --type-data-xl: 2.5rem;
   --type-data-md: 1.125rem;
   --type-data-sm: 0.8125rem;
+
+  --text-xs: var(--type-label);
+  --text-sm: var(--type-body-md);
+  --text-base: var(--type-body-lg);
+  --text-lg: var(--type-heading-md);
+  --text-xl: var(--type-heading-lg);
+  --text-2xl: var(--type-display-lg);
 
   /* Spacing */
   --space-1: 4px;
