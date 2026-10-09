@@ -1,15 +1,15 @@
 :root {
   /* Colour */
-  --color-bg-base: #0B0B0D;
+  --color-bg-base: transparent;
   --color-bg-red-deep: #2A0606;
   --color-bg-red-mid: #5C0C0C;
   --color-bg-teal-deep: #0A1F1F;
-  --color-surface-1: #141417;
-  --color-surface-2: #1C1C21;
-  --color-surface-outline: #2E2E36;
-  --color-text-primary: #F5F5F7;
-  --color-text-secondary: #B4B4BE;
-  --color-text-muted: #7C7C88;
+  --color-surface-1: rgba(16, 18, 24, 0.84);
+  --color-surface-2: rgba(24, 27, 36, 0.88);
+  --color-surface-outline: rgba(255, 255, 255, 0.12);
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #CBD5E1;
+  --color-text-muted: #94A3B8;
   --color-accent-red: #E10600;
   --color-accent-red-hot: #FF3B30;
   --color-accent-teal: #2EE6C5;
@@ -21,14 +21,16 @@
   --color-status-info: #3671C6;
 
   /* Aliases & Helpers */
-  --color-background: var(--color-bg-base);
+  --color-background: transparent;
   --color-surface: var(--color-surface-1);
-  --color-surface-subtle: rgba(255, 255, 255, 0.03);
+  --color-surface-subtle: rgba(255, 255, 255, 0.05);
   --color-surface-raised: var(--color-surface-2);
   --color-border: var(--color-surface-outline);
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.10);
   --color-accent-cyan: var(--color-accent-teal);
   --color-accent-green: var(--color-status-success);
+  --glass-blur: blur(14px);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 
   /* Telemetry Status Scale */
   --color-temp-cold: #3671C6;

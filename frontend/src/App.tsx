@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
+import { VideoBackground } from "./components/VideoBackground";
 import { RacesPage } from "./pages/RacesPage";
 import { RaceDetailPage } from "./pages/RaceDetailPage";
 import { DriverExplainerPage } from "./pages/DriverExplainerPage";
@@ -12,13 +13,15 @@ import { CardPage } from "./pages/CardPage";
 function App() {
   return (
     <BrowserRouter>
+      <VideoBackground />
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           minHeight: "100vh",
-          backgroundColor: "var(--color-background)",
+          backgroundColor: "transparent",
           color: "var(--color-text-primary)",
+          position: "relative",
         }}
       >
         <Navbar />

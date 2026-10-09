@@ -5,7 +5,9 @@ export const Footer: React.FC = () => {
     <footer
       style={{
         borderTop: "1px solid var(--color-surface-outline)",
-        backgroundColor: "var(--color-bg-base)",
+        backgroundColor: "rgba(10, 11, 14, 0.88)",
+        backdropFilter: "var(--glass-blur)",
+        WebkitBackdropFilter: "var(--glass-blur)",
         padding: "var(--space-6) var(--space-5)",
         marginTop: "var(--space-8)",
         color: "var(--color-text-muted)",

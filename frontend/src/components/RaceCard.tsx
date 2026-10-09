@@ -142,19 +142,27 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
       style={{
         display: "block",
         backgroundColor: "var(--color-surface-1)",
+        backdropFilter: "var(--glass-blur)",
+        WebkitBackdropFilter: "var(--glass-blur)",
         border: "1px solid var(--color-surface-outline)",
         borderRadius: "var(--radius-md)",
         padding: "var(--space-5)",
         textDecoration: "none",
         position: "relative",
-        transition: "transform var(--duration-micro) ease, border-color var(--duration-micro) ease",
+        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
+        transition:
+          "transform var(--duration-micro) ease, border-color var(--duration-micro) ease, box-shadow var(--duration-micro) ease, background-color var(--duration-micro) ease",
       }}
       onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = "rgba(24, 28, 38, 0.94)";
         e.currentTarget.style.borderColor = "var(--color-accent-red)";
-        e.currentTarget.style.transform = "translateY(-2px)";
+        e.currentTarget.style.boxShadow = "0 12px 32px rgba(225, 6, 0, 0.25)";
+        e.currentTarget.style.transform = "translateY(-3px)";
       }}
       onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = "var(--color-surface-1)";
         e.currentTarget.style.borderColor = "var(--color-surface-outline)";
+        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.4)";
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >

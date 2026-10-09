@@ -8,7 +8,7 @@
 }
 
 html, body {
-  background-color: var(--color-bg-base);
+  background-color: #08090C;
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: 16px;
@@ -16,6 +16,15 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+}
+
+/* Glassmorphism Surface Utility */
+.glass-panel {
+  background-color: var(--color-surface-1);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-surface-outline);
+  box-shadow: var(--glass-shadow);
 }
 
 a {

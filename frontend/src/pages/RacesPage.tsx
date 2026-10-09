@@ -72,8 +72,11 @@ export const RacesPage: React.FC = () => {
       <section
         style={{
           backgroundColor: "var(--color-surface)",
-          border: "1px solid var(--color-border-subtle)",
+          backdropFilter: "var(--glass-blur)",
+          WebkitBackdropFilter: "var(--glass-blur)",
+          border: "1px solid var(--color-surface-outline)",
           borderRadius: "var(--radius-lg)",
+          boxShadow: "var(--glass-shadow)",
           padding: "var(--space-6)",
           position: "relative",
           overflow: "hidden",
@@ -211,9 +214,12 @@ export const RacesPage: React.FC = () => {
                   fontSize: "var(--text-xs)",
                   fontWeight: 700,
                   backgroundColor: selectedYear === s.year ? "var(--color-accent-red)" : "var(--color-surface)",
+                  backdropFilter: "var(--glass-blur)",
+                  WebkitBackdropFilter: "var(--glass-blur)",
                   color: selectedYear === s.year ? "#FFFFFF" : "var(--color-text-secondary)",
                   border: "1px solid",
-                  borderColor: selectedYear === s.year ? "var(--color-accent-red)" : "var(--color-border)",
+                  borderColor: selectedYear === s.year ? "var(--color-accent-red)" : "var(--color-surface-outline)",
+                  boxShadow: selectedYear === s.year ? "0 0 16px rgba(225, 6, 0, 0.45)" : "none",
                   cursor: "pointer",
                 }}
               >
