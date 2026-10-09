@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none" stroke="currentColor">
+  <!-- Sakhir Bahrain Circuit Vector Outline -->
+  <path d="M 120 340 L 480 340 C 500 340 520 330 520 310 L 515 260 C 515 240 500 230 480 230 L 420 230 C 400 230 390 220 390 200 L 410 130 C 415 110 400 90 380 90 L 260 90 C 240 90 230 100 220 120 L 200 160 C 190 180 180 190 160 190 L 110 190 C 90 190 80 210 90 230 L 110 270 C 115 280 115 290 110 300 L 100 320 C 95 335 105 340 120 340 Z" 
+        stroke="var(--color-accent-teal, #2EE6C5)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+</svg>

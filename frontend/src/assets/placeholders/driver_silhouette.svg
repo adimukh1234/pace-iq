@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <defs>
+    <linearGradient id="silhouetteGrad" x1="200" y1="50" x2="200" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F5F5F7" stop-opacity="0.85"/>
+      <stop offset="60%" stop-color="#B4B4BE" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#2E2E36" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  <!-- Stylized F1 Helmet & Driver Shoulders -->
+  <!-- Helmet -->
+  <path d="M140 160 C140 100 170 70 200 70 C230 70 260 100 260 160 C260 195 245 220 200 220 C155 220 140 195 140 160 Z" fill="url(#silhouetteGrad)" />
+  <!-- Visor -->
+  <path d="M165 140 C175 130 225 130 235 140 C240 148 238 162 232 165 C215 172 185 172 168 165 C162 162 160 148 165 140 Z" fill="#0B0B0D" />
+  <!-- Neck / Collar -->
+  <path d="M175 210 L225 210 L235 240 L165 240 Z" fill="url(#silhouetteGrad)" />
+  <!-- Racing Suit Shoulders and Torso -->
+  <path d="M165 240 L235 240 L310 270 L340 380 L350 490 L50 490 L60 380 L90 270 Z" fill="url(#silhouetteGrad)" />
+</svg>
