@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MapPin, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { MapPin, Trophy, Flame, Sparkles, XCircle } from "lucide-react";
 import type { RaceListItem } from "../types";
 
 export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = ({
@@ -8,47 +8,132 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
 }) => {
   const isCompleted = race.status === "completed";
 
-  // Result Badge icon and color
+  // Result Badge icon and styling (Flashy, celebrating podium hits as wins)
   const renderResultStrip = () => {
-    if (!race.result_status) return null;
+    if (!race.result_status && !race.actual_podium) return null;
 
-    let bg = "var(--color-surface-2)";
-    let textCol = "var(--color-text-secondary)";
-    let Icon = AlertTriangle;
+    // Detect hits from result_status or compute from actual vs predicted podium
+    let hits = 0;
+    let isExactAll = false;
+    const status = race.result_status || "";
 
-    if (race.result_status === "Podium correct") {
-      bg = "rgba(52, 199, 89, 0.15)";
-      textCol = "var(--color-status-success)";
-      Icon = CheckCircle;
-    } else if (race.result_status === "Partially correct") {
-      bg = "rgba(255, 184, 0, 0.15)";
-      textCol = "var(--color-accent-amber)";
-      Icon = AlertTriangle;
-    } else if (race.result_status === "Missed") {
-      bg = "rgba(255, 69, 58, 0.15)";
-      textCol = "var(--color-status-danger)";
-      Icon = XCircle;
+    if (status.includes("3/3") || status === "Podium correct") {
+      hits = 3;
+      isExactAll = status.includes("Exact");
+    } else if (status.includes("2/3")) {
+      hits = 2;
+    } else if (status.includes("1/3")) {
+      hits = 1;
+    } else if (race.actual_podium && race.predicted_podium) {
+      const predNums = race.predicted_podium.map((p) => p.driver_number);
+      const actNums = race.actual_podium.map((a) => a.driver_number);
+      hits = predNums.filter((n) => actNums.includes(n)).length;
+      isExactAll = predNums.length === 3 && predNums.every((n, i) => n === actNums[i]);
     }
 
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "var(--space-2)",
-          backgroundColor: bg,
-          color: textCol,
-          padding: "var(--space-1) var(--space-3)",
-          borderRadius: "var(--radius-sm)",
-          fontSize: "var(--type-label)",
-          fontWeight: 700,
-          marginTop: "var(--space-3)",
-        }}
-      >
-        <Icon size={14} />
-        <span>{race.result_status}</span>
-      </div>
-    );
+    if (hits === 3) {
+      return (
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.18) 100%)",
+            border: "1px solid rgba(16, 185, 129, 0.65)",
+            boxShadow: "0 0 14px rgba(16, 185, 129, 0.35)",
+            color: "#34D399",
+            padding: "4px 10px",
+            borderRadius: "var(--radius-sm)",
+            fontSize: "var(--type-label)",
+            fontWeight: 800,
+            letterSpacing: "0.04em",
+            marginTop: "var(--space-3)",
+            width: "fit-content",
+          }}
+        >
+          <Trophy size={14} color="#34D399" />
+          <span>{isExactAll ? "3/3 EXACT PODIUM LOCK" : "3/3 PODIUM LOCK"}</span>
+        </div>
+      );
+    }
+
+    if (hits === 2) {
+      return (
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "linear-gradient(135deg, rgba(6, 182, 212, 0.24) 0%, rgba(59, 130, 246, 0.2) 100%)",
+            border: "1px solid rgba(6, 182, 212, 0.65)",
+            boxShadow: "0 0 14px rgba(6, 182, 212, 0.32)",
+            color: "#22D3EE",
+            padding: "4px 10px",
+            borderRadius: "var(--radius-sm)",
+            fontSize: "var(--type-label)",
+            fontWeight: 800,
+            letterSpacing: "0.04em",
+            marginTop: "var(--space-3)",
+            width: "fit-content",
+          }}
+        >
+          <Flame size={14} color="#22D3EE" />
+          <span>2/3 PODIUM HIT</span>
+        </div>
+      );
+    }
+
+    if (hits === 1) {
+      return (
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "linear-gradient(135deg, rgba(139, 92, 246, 0.22) 0%, rgba(99, 102, 241, 0.18) 100%)",
+            border: "1px solid rgba(139, 92, 246, 0.6)",
+            boxShadow: "0 0 12px rgba(139, 92, 246, 0.28)",
+            color: "#C084FC",
+            padding: "4px 10px",
+            borderRadius: "var(--radius-sm)",
+            fontSize: "var(--type-label)",
+            fontWeight: 800,
+            letterSpacing: "0.04em",
+            marginTop: "var(--space-3)",
+            width: "fit-content",
+          }}
+        >
+          <Sparkles size={14} color="#C084FC" />
+          <span>1/3 PODIUM HIT</span>
+        </div>
+      );
+    }
+
+    if (race.status === "completed") {
+      return (
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            backgroundColor: "rgba(239, 68, 68, 0.08)",
+            border: "1px solid rgba(239, 68, 68, 0.25)",
+            color: "var(--color-text-muted)",
+            padding: "4px 10px",
+            borderRadius: "var(--radius-sm)",
+            fontSize: "var(--type-label)",
+            fontWeight: 700,
+            marginTop: "var(--space-3)",
+            width: "fit-content",
+          }}
+        >
+          <XCircle size={14} color="var(--color-status-danger)" />
+          <span>MISSED</span>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (

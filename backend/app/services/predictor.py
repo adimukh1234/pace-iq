@@ -142,9 +142,13 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
                     set_overlap = len(set(pred_top3).intersection(set(act_top3)))
 
                     if exact_count == 3:
-                        result_status = "Podium correct"
-                    elif set_overlap >= 1:
-                        result_status = "Partially correct"
+                        result_status = "3/3 Exact Podium"
+                    elif set_overlap == 3:
+                        result_status = "3/3 Podium Lock"
+                    elif set_overlap == 2:
+                        result_status = "2/3 Correct"
+                    elif set_overlap == 1:
+                        result_status = "1/3 Correct"
                     else:
                         result_status = "Missed"
 

@@ -35,7 +35,7 @@ export interface RaceListItem {
   status: "upcoming" | "completed";
   predicted_podium: PredictedDriverPodium[];
   actual_podium?: PredictedDriverPodium[] | null;
-  result_status?: "Podium correct" | "Partially correct" | "Missed" | null;
+  result_status?: string | null;
 }
 
 export interface PredictedOrderRow {
