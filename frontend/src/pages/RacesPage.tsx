@@ -7,44 +7,61 @@ import { LoadingState, ErrorState, EmptyState } from "../components/States";
 
 export const RacesPage: React.FC = () => {
   const [seasons, setSeasons] = useState<SeasonSummary[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [races, setRaces] = useState<RaceListItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isCurrent = true;
     async function loadSeasons() {
       try {
         const data = await racesApi.getSeasons();
+        if (!isCurrent) return;
         setSeasons(data);
         if (data.length > 0 && !data.some((s: SeasonSummary) => s.year === selectedYear)) {
           setSelectedYear(data[0].year);
         }
       } catch {
-        // Fallback default
-        setSeasons([{ year: 2024, total_races: 24, completed_races: 2 }]);
+        if (!isCurrent) return;
+        setSeasons([
+          { year: 2026, total_races: 4, completed_races: 4 },
+          { year: 2025, total_races: 24, completed_races: 24 },
+        ]);
       }
     }
     loadSeasons();
+    return () => {
+      isCurrent = false;
+    };
   }, []);
 
-  const loadRaces = async (year: number) => {
+  const activeRequestRef = React.useRef<number>(0);
+
+  const loadRaces = React.useCallback(async (year: number) => {
+    const requestId = ++activeRequestRef.current;
     setLoading(true);
     setError(null);
     try {
       const data = await racesApi.getRaces(year);
-      setRaces(data);
+      if (requestId === activeRequestRef.current) {
+        setRaces(data);
+      }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to load races";
-      setError(msg);
+      if (requestId === activeRequestRef.current) {
+        const msg = err instanceof Error ? err.message : "Failed to load races";
+        setError(msg);
+      }
     } finally {
-      setLoading(false);
+      if (requestId === activeRequestRef.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadRaces(selectedYear);
-  }, [selectedYear]);
+  }, [selectedYear, loadRaces]);
 
   const completedCount = races.filter((r) => r.status === "completed").length;
   const upcomingCount = races.filter((r) => r.status === "upcoming").length;

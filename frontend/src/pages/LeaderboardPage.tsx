@@ -18,7 +18,7 @@ export const LeaderboardPage: React.FC = () => {
   useEffect(() => {
     async function loadRaces() {
       try {
-        const list = await racesApi.getRaces(2024);
+        const list = await racesApi.getRaces(2026);
         setRaces(list);
       } catch {
         // Fallback

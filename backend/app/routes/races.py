@@ -32,7 +32,7 @@ def list_seasons(db: DBSession = Depends(get_db)):
 
 @router.get("/races", response_model=list[RaceListItem])
 def list_races(
-    year: int = Query(default=2024, ge=2023, le=2026),
+    year: int = Query(default=2026, ge=2021, le=2026),
     db: DBSession = Depends(get_db),
 ):
     """List races for a given season with status and predicted podium."""

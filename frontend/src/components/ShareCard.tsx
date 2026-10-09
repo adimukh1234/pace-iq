@@ -121,7 +121,7 @@ Check it out on PaceIQ: ${window.location.href}`;
               {card.race_name}
             </h2>
             <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
-              {card.circuit_name} • {card.date ? new Date(card.date).getFullYear() : "2024"}
+              {card.circuit_name} • {card.date ? new Date(card.date).getFullYear() : "2026"}
             </div>
           </div>
 

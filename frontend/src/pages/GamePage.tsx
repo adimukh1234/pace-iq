@@ -21,7 +21,7 @@ export const GamePage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const list = await racesApi.getRaces(2024);
+        const list = await racesApi.getRaces(2026);
         setRaces(list);
         if (list.length > 0) {
           // Select first upcoming race, or the first race in the list
