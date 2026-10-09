@@ -105,28 +105,42 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
             for p in pred_podium_rows
         ]
 
-        # Result status
+        # Result status and actual podium
+        actual_podium = None
         result_status = None
-        if is_completed and len(predicted_podium) == 3:
+        if is_completed:
             act_query = text("""
-                SELECT driver_number, position
-                FROM session_results
-                WHERE session_key = :s_key AND position <= 3
-                ORDER BY position ASC
+                SELECT r.driver_number, d.full_name, d.name_acronym, d.team_name, d.team_colour, r.position
+                FROM session_results r
+                JOIN drivers d ON r.session_key = d.session_key AND r.driver_number = d.driver_number
+                WHERE r.session_key = :s_key AND r.position <= 3
+                ORDER BY r.position ASC
             """)
             act_rows = db.execute(act_query, {"s_key": s_key}).fetchall()
-            act_top3 = [int(a[0]) for a in act_rows]
-            pred_top3 = [p.driver_number for p in predicted_podium]
+            if len(act_rows) >= 3:
+                actual_podium = [
+                    PredictedDriverPodium(
+                        driver_number=int(a[0]),
+                        full_name=str(a[1]),
+                        name_acronym=str(a[2]),
+                        team_name=str(a[3]),
+                        team_colour=str(a[4]),
+                    )
+                    for a in act_rows[:3]
+                ]
+                if len(predicted_podium) == 3:
+                    act_top3 = [a.driver_number for a in actual_podium]
+                    pred_top3 = [p.driver_number for p in predicted_podium]
 
-            exact_count = sum(1 for p, a in zip(pred_top3, act_top3) if p == a)
-            set_overlap = len(set(pred_top3).intersection(set(act_top3)))
+                    exact_count = sum(1 for p, a in zip(pred_top3, act_top3) if p == a)
+                    set_overlap = len(set(pred_top3).intersection(set(act_top3)))
 
-            if exact_count == 3:
-                result_status = "Podium correct"
-            elif set_overlap >= 1:
-                result_status = "Partially correct"
-            else:
-                result_status = "Missed"
+                    if exact_count == 3:
+                        result_status = "Podium correct"
+                    elif set_overlap >= 1:
+                        result_status = "Partially correct"
+                    else:
+                        result_status = "Missed"
 
         items.append(
             RaceListItem(
@@ -139,6 +153,7 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
                 year=int(r[6]),
                 status="completed" if is_completed else "upcoming",
                 predicted_podium=predicted_podium,
+                actual_podium=actual_podium,
                 result_status=result_status,
             )
         )

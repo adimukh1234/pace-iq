@@ -34,6 +34,7 @@ export interface RaceListItem {
   year: number;
   status: "upcoming" | "completed";
   predicted_podium: PredictedDriverPodium[];
+  actual_podium?: PredictedDriverPodium[] | null;
   result_status?: "Podium correct" | "Partially correct" | "Missed" | null;
 }
 

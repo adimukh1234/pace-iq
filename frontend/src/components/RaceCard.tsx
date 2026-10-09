@@ -157,59 +157,126 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex: number }> = ({
         </span>
       </div>
 
-      {/* Predicted Podium */}
-      {race.predicted_podium && race.predicted_podium.length > 0 && (
-        <div style={{ marginTop: "var(--space-3)" }}>
-          <div
-            style={{
-              fontSize: "var(--type-label)",
-              color: "var(--color-text-muted)",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              marginBottom: "var(--space-2)",
-            }}
-          >
-            Predicted Podium
-          </div>
-          <div style={{ display: "flex", gap: "var(--space-2)" }}>
-            {race.predicted_podium.map((p, idx) => (
-              <div
-                key={p.driver_number}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "var(--space-1)",
-                  backgroundColor: "var(--color-surface-2)",
-                  padding: "4px 8px",
-                  borderRadius: "var(--radius-sm)",
-                  borderBottom: `2px solid ${p.team_colour}`,
-                }}
-              >
-                <span
+      {/* Predicted & Actual Podiums */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", marginTop: "var(--space-3)" }}>
+        {race.predicted_podium && race.predicted_podium.length > 0 && (
+          <div>
+            <div
+              style={{
+                fontSize: "var(--type-label)",
+                color: "var(--color-text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                marginBottom: "var(--space-1)",
+              }}
+            >
+              Predicted Podium
+            </div>
+            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+              {race.predicted_podium.map((p, idx) => (
+                <div
+                  key={p.driver_number}
                   style={{
-                    fontFamily: "var(--font-data)",
-                    fontSize: "0.75rem",
-                    color: "var(--color-accent-orange)",
-                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--space-1)",
+                    backgroundColor: "var(--color-surface-2)",
+                    padding: "4px 8px",
+                    borderRadius: "var(--radius-sm)",
+                    borderBottom: `2px solid ${p.team_colour}`,
                   }}
                 >
-                  P{idx + 1}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-data)",
-                    fontSize: "var(--type-body-md)",
-                    fontWeight: 700,
-                    color: "var(--color-text-primary)",
-                  }}
-                >
-                  {p.name_acronym}
-                </span>
-              </div>
-            ))}
+                  <span
+                    style={{
+                      fontFamily: "var(--font-data)",
+                      fontSize: "0.75rem",
+                      color: "var(--color-accent-orange)",
+                      fontWeight: 700,
+                    }}
+                  >
+                    P{idx + 1}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-data)",
+                      fontSize: "var(--type-body-md)",
+                      fontWeight: 700,
+                      color: "var(--color-text-primary)",
+                    }}
+                  >
+                    {p.name_acronym}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Real / Actual Results if completed */}
+        {race.actual_podium && race.actual_podium.length > 0 && (
+          <div>
+            <div
+              style={{
+                fontSize: "var(--type-label)",
+                color: "var(--color-status-success)",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                marginBottom: "var(--space-1)",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <span>Actual Podium (Official)</span>
+            </div>
+            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+              {race.actual_podium.map((a, idx) => {
+                const isExactHit = race.predicted_podium?.[idx]?.driver_number === a.driver_number;
+                return (
+                  <div
+                    key={a.driver_number}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "var(--space-1)",
+                      backgroundColor: isExactHit
+                        ? "rgba(52, 199, 89, 0.12)"
+                        : "var(--color-surface-2)",
+                      padding: "4px 8px",
+                      borderRadius: "var(--radius-sm)",
+                      border: isExactHit
+                        ? "1px solid rgba(52, 199, 89, 0.3)"
+                        : "1px solid var(--color-surface-outline)",
+                      borderBottom: `2px solid ${a.team_colour}`,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "var(--font-data)",
+                        fontSize: "0.75rem",
+                        color: "var(--color-status-success)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      P{idx + 1}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-data)",
+                        fontSize: "var(--type-body-md)",
+                        fontWeight: 700,
+                        color: "var(--color-text-primary)",
+                      }}
+                    >
+                      {a.name_acronym}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Result Indicator Strip */}
       {renderResultStrip()}

@@ -50,6 +50,7 @@ class RaceListItem(BaseModel):
     year: int
     status: str  # "upcoming" or "completed"
     predicted_podium: list[PredictedDriverPodium]
+    actual_podium: list[PredictedDriverPodium] | None = None
     result_status: str | None = (
         None  # "Podium correct", "Partially correct", "Missed", or None
     )
