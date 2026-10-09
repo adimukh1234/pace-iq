@@ -1,0 +1,36 @@
+# Environment & Dependencies
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ruff_cache/
+
+# Data & Model Artefacts (pipeline generates these)
+backend/data/
+backend/models/*.joblib
+backend/models/*.png
+!backend/models/.gitkeep
+data/raw/
+data/logs/
+*.db
+*.sqlite3
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+dist/
+node_modules/
+
+# Worktrees & Editor
+.worktrees/
+worktrees/
+.vscode/
+.idea/
+*.log
+.DS_Store
