@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { MapPin, Trophy, Flame, Sparkles, XCircle } from "lucide-react";
 import type { RaceListItem } from "../types";
+import { DriverAvatar } from "./DriverAvatar";
 
 export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = ({
   race,
@@ -252,13 +253,20 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "var(--space-1)",
+                    gap: "6px",
                     backgroundColor: "var(--color-surface-2)",
                     padding: "4px 8px",
                     borderRadius: "var(--radius-sm)",
                     borderBottom: `2px solid ${p.team_colour}`,
                   }}
                 >
+                  <DriverAvatar
+                    url={p.headshot_url}
+                    name={p.name_acronym}
+                    driverNumber={p.driver_number}
+                    teamColour={p.team_colour}
+                    size="xs"
+                  />
                   <span
                     style={{
                       fontFamily: "var(--font-data)",
@@ -311,7 +319,7 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "var(--space-1)",
+                      gap: "6px",
                       backgroundColor: isExactHit
                         ? "rgba(52, 199, 89, 0.12)"
                         : "var(--color-surface-2)",
@@ -323,6 +331,13 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
                       borderBottom: `2px solid ${a.team_colour}`,
                     }}
                   >
+                    <DriverAvatar
+                      url={a.headshot_url}
+                      name={a.name_acronym}
+                      driverNumber={a.driver_number}
+                      teamColour={a.team_colour}
+                      size="xs"
+                    />
                     <span
                       style={{
                         fontFamily: "var(--font-data)",

@@ -36,6 +36,7 @@ class PredictedDriverPodium(BaseModel):
     driver_number: int
     name_acronym: str
     team_colour: str
+    headshot_url: str | None = None
 
 
 class RaceListItem(BaseModel):
@@ -63,6 +64,7 @@ class PredictedOrderRow(BaseModel):
     team_colour: str
     predicted_position: int
     podium_probability: float
+    headshot_url: str | None = None
 
 
 class ActualOrderRow(BaseModel):
@@ -76,6 +78,7 @@ class ActualOrderRow(BaseModel):
     delta: int | None = None
     dnf: bool = False
     points: float = 0.0
+    headshot_url: str | None = None
 
 
 class RaceDetailResponse(BaseModel):
@@ -143,4 +146,5 @@ class DriverExplainResponse(BaseModel):
     positive: list[FeatureContribution]
     negative: list[FeatureContribution]
     summary: str
+    headshot_url: str | None = None
 

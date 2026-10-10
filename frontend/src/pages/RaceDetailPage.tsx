@@ -15,6 +15,7 @@ import { PositionRow } from "../components/PositionRow";
 import { StintTimeline } from "../components/StintTimeline";
 import { RaceStatsVisualizer } from "../components/RaceStatsVisualizer";
 import { ErrorState, SkeletonTable } from "../components/States";
+import { DriverAvatar } from "../components/DriverAvatar";
 
 export const RaceDetailPage: React.FC = () => {
   const { sessionKey } = useParams<{ sessionKey: string }>();
@@ -269,13 +270,20 @@ export const RaceDetailPage: React.FC = () => {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "var(--space-2)",
+                    gap: "8px",
                     backgroundColor: "var(--color-surface-2)",
                     padding: "6px 12px",
                     borderRadius: "var(--radius-sm)",
                     borderBottom: `3px solid ${p.team_colour}`,
                   }}
                 >
+                  <DriverAvatar
+                    url={p.headshot_url}
+                    name={p.name_acronym}
+                    driverNumber={p.driver_number}
+                    teamColour={p.team_colour}
+                    size="xs"
+                  />
                   <span
                     style={{
                       fontFamily: "var(--font-data)",
@@ -328,7 +336,7 @@ export const RaceDetailPage: React.FC = () => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "var(--space-2)",
+                      gap: "8px",
                       backgroundColor: isExact
                         ? "rgba(52, 199, 89, 0.15)"
                         : "var(--color-surface-2)",
@@ -340,6 +348,13 @@ export const RaceDetailPage: React.FC = () => {
                       borderBottom: `3px solid ${a.team_colour}`,
                     }}
                   >
+                    <DriverAvatar
+                      url={a.headshot_url}
+                      name={a.name_acronym}
+                      driverNumber={a.driver_number}
+                      teamColour={a.team_colour}
+                      size="xs"
+                    />
                     <span
                       style={{
                         fontFamily: "var(--font-data)",
@@ -552,13 +567,12 @@ export const RaceDetailPage: React.FC = () => {
 
                       {/* Driver & Team */}
                       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-                        <div
-                          style={{
-                            width: "4px",
-                            height: "28px",
-                            backgroundColor: act.team_colour || "var(--color-accent-red)",
-                            borderRadius: "2px",
-                          }}
+                        <DriverAvatar
+                          url={act.headshot_url}
+                          name={act.name_acronym}
+                          driverNumber={act.driver_number}
+                          teamColour={act.team_colour}
+                          size="md"
                         />
                         <div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)" }}>

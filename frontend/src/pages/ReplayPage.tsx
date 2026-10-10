@@ -12,6 +12,7 @@ import type {
 import { LapChart } from "../components/LapChart";
 import { StintTimeline } from "../components/StintTimeline";
 import { ErrorState } from "../components/States";
+import { DriverAvatar } from "../components/DriverAvatar";
 
 export const ReplayPage: React.FC = () => {
   const { sessionKey } = useParams<{ sessionKey: string }>();
@@ -255,7 +256,7 @@ export const ReplayPage: React.FC = () => {
                 onClick={() => toggleDriver(d.driver_number)}
                 style={{
                   minHeight: "44px",
-                  padding: "8px 14px",
+                  padding: "6px 12px",
                   borderRadius: "var(--radius-sm)",
                   fontFamily: "var(--font-mono)",
                   fontSize: "var(--text-xs)",
@@ -266,17 +267,16 @@ export const ReplayPage: React.FC = () => {
                   cursor: "pointer",
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "6px",
+                  gap: "8px",
                   transition: "all 0.15s ease",
                 }}
               >
-                <span
-                  style={{
-                    width: "8px",
-                    height: "8px",
-                    borderRadius: "50%",
-                    backgroundColor: teamCol,
-                  }}
+                <DriverAvatar
+                  url={d.headshot_url}
+                  name={d.name_acronym}
+                  driverNumber={d.driver_number}
+                  teamColour={d.team_colour}
+                  size="xs"
                 />
                 <span>{d.name_acronym}</span>
                 <span style={{ opacity: 0.6, fontSize: "10px" }}>#{d.driver_number}</span>

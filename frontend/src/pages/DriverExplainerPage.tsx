@@ -5,6 +5,7 @@ import { driversApi } from "../api/client";
 import type { DriverExplainResponse } from "../types";
 import { ContributionChart } from "../components/ContributionChart";
 import { ErrorState } from "../components/States";
+import { DriverAvatar } from "../components/DriverAvatar";
 
 export const DriverExplainerPage: React.FC = () => {
   const { sessionKey, driverNumber } = useParams<{ sessionKey: string; driverNumber: string }>();
@@ -119,48 +120,58 @@ export const DriverExplainerPage: React.FC = () => {
             zIndex: 1,
           }}
         >
-          <div>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                fontFamily: "var(--font-mono)",
-                fontSize: "var(--text-xs)",
-                color: "var(--color-text-muted)",
-                marginBottom: "var(--space-2)",
-              }}
-            >
-              <Cpu size={14} color="var(--color-accent-cyan)" />
-              <span>DRIVER TELEMETRY ATTRIBUTION</span>
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-5)", flexWrap: "wrap" }}>
+            <DriverAvatar
+              url={data.headshot_url}
+              name={data.driver_name}
+              driverNumber={data.driver_number}
+              teamColour={data.team_colour}
+              size="xl"
+              priority={true}
+            />
+            <div>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "var(--text-xs)",
+                  color: "var(--color-text-muted)",
+                  marginBottom: "var(--space-2)",
+                }}
+              >
+                <Cpu size={14} color="var(--color-accent-cyan)" />
+                <span>DRIVER TELEMETRY ATTRIBUTION</span>
+              </div>
 
-            <h1
-              style={{
-                fontFamily: "var(--font-heading)",
-                fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-                color: "var(--color-text-primary)",
-                margin: "0 0 4px 0",
-              }}
-            >
-              {data.driver_name}
-            </h1>
+              <h1
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
+                  color: "var(--color-text-primary)",
+                  margin: "0 0 4px 0",
+                }}
+              >
+                {data.driver_name}
+              </h1>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "var(--space-3)",
-                fontSize: "var(--text-sm)",
-                fontFamily: "var(--font-mono)",
-                color: "var(--color-text-secondary)",
-              }}
-            >
-              <span style={{ color: teamColour, fontWeight: 700 }}>
-                {data.team_name}
-              </span>
-              <span>•</span>
-              <span>CAR #{data.driver_number}</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "var(--space-3)",
+                  fontSize: "var(--text-sm)",
+                  fontFamily: "var(--font-mono)",
+                  color: "var(--color-text-secondary)",
+                }}
+              >
+                <span style={{ color: teamColour, fontWeight: 700 }}>
+                  {data.team_name}
+                </span>
+                <span>•</span>
+                <span>#{data.driver_number}</span>
+              </div>
             </div>
           </div>
 

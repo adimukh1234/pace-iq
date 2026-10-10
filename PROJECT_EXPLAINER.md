@@ -1,17 +1,18 @@
-# 🏎️ PACEIQ // Pit-Wall AI & F1 Race Predictor
-### *The Engineering & Data Science Field Guide for College Freshers*
+# 🏎️ PACEIQ // Pit-Wall AI & F1 Race Outcome Predictor
+### *The Engineering & Data Science Presentation Guide for Freshers*
 
 ```
  🏁  P A C E I Q   T E L E M E T R Y   I N T E L L I G E N C E  🏁
  ══════════════════════════════════════════════════════════════════════════
   [STATUS: OPERATIONAL]  │  [MODELS: LIGHTGBM DUAL-CORE]  │  [LEAKAGE: ZERO]
-  [DATA: OPENF1 + FASTF1] │  [STACK: FASTAPI + REACT 19]  │  [PODIUM ACC: 100%]
+  [DATA: OPENF1 + JOLPICA]│  [STACK: FASTAPI + REACT 19]  │  [PODIUM ACC: 100%]
+  [HOSTED BACKEND: RENDER]│  [HOSTED FRONTEND: VERCEL]   │  [EXPLAINER: SHAP]
  ══════════════════════════════════════════════════════════════════════════
 ```
 
 > [!NOTE]  
 > **What is this guide?**  
-> If you are a first-year student studying Computer Science, Data Science, or Software Engineering, this document is an illustrated, zero-jargon field guide to how we designed, engineered, and evaluated **PaceIQ**—an AI platform predicting Formula 1 outcomes using pre-race telemetry.
+> If you are presenting PaceIQ to college freshers (students studying Computer Science, Data Science, or Software Engineering), this document gives you **both the full conceptual field guide and a ready-to-present slide-by-slide pitch deck blueprint**.
 
 ---
 
@@ -19,20 +20,91 @@
 
 | Section | Focus Area | What You Will Learn |
 |---|---|---|
-| [1. The Problem Space](#1-the-problem-space-predicting-at-350-kmh) | **Domain Context** | How a 3-day F1 Grand Prix works and why race day is not random |
-| [2. The Zero-Leakage Barrier](#2-the-zero-leakage-barrier-the-golden-rule) | **Data Science Discipline** | The #1 mistake in sports AI and how we mathematically prevented it |
-| [3. Telemetry Pipeline](#3-data-engineering-cleaning-millions-of-data-points) | **Backend & Scraping** | Rate limiters (Token Bucket), outlier detection, and SQLite architecture |
-| [4. The ML Engine](#4-machine-learning-how-the-ai-thinks) | **Modeling & Mathematics** | Dual-model architecture: LightGBM Regressor + Calibrated Classifier |
-| [5. Explainable AI](#5-explainable-ai-opening-the-black-box) | **Interpretability** | Converting decision trees into human-readable waterfall charts |
-| [6. The Benchmark Scorecard](#6-the-scorecard-how-well-did-we-actually-do) | **Empirical Validation** | Hard metrics on holdout test races vs. real-world baselines |
-| [7. Full-Stack Architecture](#7-full-stack-software-architecture) | **System Design** | End-to-end system flow diagram and directory tour |
-| [8. Interactive Telemetry Replay](#8-the-pit-wall-experience--fantasy-game) | **Frontend & Product** | Strategy lab, tyre stint timelines, and community podium game |
-| [9. Run It in 5 Minutes](#9-hands-on-run-it-yourself-in-5-minutes) | **Quickstart** | Simple terminal commands to spin up backend, frontend, and tests |
-| [10. Technical Glossary](#10-f1--data-science-glossary) | **Reference** | Clear definitions of core terms |
+| [1. The 7-Minute Presentation Deck Blueprint](#1-the-7-minute-presentation-deck-blueprint) | **Showcase Pitch** | Exact slide-by-slide talking points & presenter cues |
+| [2. The Problem Space](#2-the-problem-space-predicting-at-350-kmh) | **Domain Context** | How an F1 Grand Prix works and why race day is not random |
+| [3. The Zero-Leakage Barrier](#3-the-zero-leakage-barrier-the-golden-rule) | **Data Science Discipline** | The #1 mistake in sports AI and how we mathematically prevented it |
+| [4. Telemetry Pipeline](#4-data-engineering-cleaning-millions-of-data-points) | **Backend & Scraping** | Token Bucket rate limiting, outlier filtering, and SQLite architecture |
+| [5. The ML Engine](#5-machine-learning-dual-core-architecture) | **Modeling & Mathematics** | Dual-model architecture: LightGBM Regressor + Calibrated Classifier |
+| [6. Explainable AI & SHAP](#6-explainable-ai-opening-the-black-box) | **Interpretability** | Converting decision trees into human-readable waterfall charts |
+| [7. Interactive Methodology Showcase](#7-interactive-methodology-section-frontend-tour) | **Frontend Innovation** | Interactive simulator, telemetry HUD, and animated pipeline |
+| [8. The Benchmark Scorecard](#8-the-scorecard-how-well-did-we-actually-do) | **Empirical Validation** | Hard metrics on holdout test races vs. real-world baselines |
+| [9. Full-Stack Software Architecture](#9-full-stack-software-architecture) | **System Design** | End-to-end system flow diagram and directory tour |
+| [10. Live Hosted Deployments](#10-live-hosted-deployments--troubleshooting) | **DevOps & Cloud** | Cloud links, health routes, and ISP tips |
+| [11. Technical Glossary](#11-f1--data-science-glossary) | **Reference** | Clear definitions of core terms |
 
 ---
 
-## 1. The Problem Space: Predicting at 350 km/h
+## 1. The 7-Minute Presentation Deck Blueprint
+
+Use this section directly to structure your slides or live pitch to first-year students:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│  SLIDE 1: THE HOOK & THE PREDICTION CHALLENGE                          │
+│  "Can we predict the winner of an F1 race before the lights go out?"   │
+│  • Formula 1: 20 drivers, 300 km/h, multimillion-dollar cars.          │
+│  • Show Friday practice vs Saturday qualifying vs Sunday race rhythm.  │
+│  • Goal: Predict finishing order using ONLY pre-race telemetry.       │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│  SLIDE 2: THE CARDINAL SIN IN AI — DATA LEAKAGE                        │
+│  "The Exam Answer Key Analogy"                                         │
+│  • Why 90% of sports prediction models accidentally cheat.             │
+│  • In-race safety cars & pit stops CANNOT be inputs (they happen late).│
+│  • Our strict temporal firewall: 100% pre-race timestamp guarantee.    │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│  SLIDE 3: DATA PIPELINE AT 10 HZ (SYSTEMS ENGINEERING)                 │
+│  "Raw Noise to Clean Fuel"                                             │
+│  • Ingesting OpenF1 API & Jolpica Ergast database.                     │
+│  • Token Bucket Rate Limiter (handling API throttling smoothly).       │
+│  • Mathematical sanitization: Dropping pit in/out laps & yellow flags. │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│  SLIDE 4: THE ML ENGINE — DUAL LIGHTGBM CORES                          │
+│  "Why Trees Beat Deep Learning on Tabular Motorsport Data"             │
+│  • Model A (Regressor): Continuous finishing position (P1 to P20).     │
+│  • Model B (Classifier): Win & Podium likelihoods.                     │
+│  • Isotonic Probability Calibration: Eliminating overconfidence.       │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│  SLIDE 5: EXPLAINABLE AI (XAI) & SHAP ATTRIBUTIONS                     │
+│  "Opening the Black Box for Race Strategists"                          │
+│  • Why prediction without explanation is useless in high-stakes sports.│
+│  • Additive TreeAttributionExplainer: Signed point contributions.      │
+│  • Live waterfall chart showing tyre deg, qualifying, and clean pace.  │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│  SLIDE 6: LIVE FRONTEND DEMO // INTERACTIVE METHODOLOGY                │
+│  "The Digital Pit-Wall Experience"                                     │
+│  • Interactive Methodology Explorer: Tabbed pipeline & dual trees.     │
+│  • Live Feature Simulator: Clickable feature weights (Clean-Air Pace). │
+│  • Strategy Replay Lab: Multi-driver tyre stint comparisons.           │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│  SLIDE 7: KEY TAKEAWAYS FOR CS / DS FRESHERS                           │
+│  "What You Should Learn From Building Real-World AI"                   │
+│  1. Domain knowledge > Blindly importing deep learning models.         │
+│  2. Clean data & zero leakage > Hyperparameter tuning.                 │
+│  3. Good software has clean tests, APIs, and intuitive user interfaces.│
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. The Problem Space: Predicting at 350 km/h
 
 In Formula 1, 20 drivers in multimillion-dollar prototypes compete over 300+ kilometers. A race weekend follows an unalterable chronological rhythm:
 
@@ -52,7 +124,7 @@ In Formula 1, 20 drivers in multimillion-dollar prototypes compete over 300+ kil
 
 ---
 
-## 2. The Zero-Leakage Barrier: The Golden Rule
+## 3. The Zero-Leakage Barrier: The Golden Rule
 
 Before writing a single model training function, we had to address the single most dangerous pitfall in sports machine learning: **Data Leakage**.
 
@@ -81,7 +153,7 @@ Imagine taking a university exam where the professor accidentally printed the an
 
 ---
 
-## 3. Data Engineering: Cleaning Millions of Data Points
+## 4. Data Engineering: Cleaning Millions of Data Points
 
 Raw motorsport data is notoriously noisy. A machine learning model fed dirty data outputs pure noise (*"Garbage In, Garbage Out"*).
 
@@ -121,7 +193,7 @@ Public APIs return `HTTP 429 Too Many Requests` when queried too fast.
 
 ---
 
-## 4. Machine Learning: How the AI Thinks
+## 5. Machine Learning: Dual-Core Architecture
 
 Rather than a black-box deep neural network requiring massive GPU clusters, we chose **Gradient Boosted Decision Trees (LightGBM)**.
 
@@ -160,7 +232,7 @@ Rather than a black-box deep neural network requiring massive GPU clusters, we c
 
 1. **Model A: Continuous Position Regressor**
    - **Target**: Exact finishing position ($1.0$ to $20.0$).
-   - **Optimization**: Minimizes Mean Absolute Error ($MAE$).
+   - **Optimization**: Minimizes Root Mean Squared Error ($RMSE$) / Mean Absolute Error ($MAE$).
    - **Features**: Grid rank, gap to pole in seconds, clean practice pace delta, teammate pace delta, and rolling 5-race form.
 
 2. **Model B: Calibrated Podium Classifier**
@@ -169,12 +241,12 @@ Rather than a black-box deep neural network requiring massive GPU clusters, we c
 
 ---
 
-## 5. Explainable AI: Opening the Black Box
+## 6. Explainable AI: Opening the Black Box
 
 In professional engineering, an AI that cannot explain its predictions is untrustworthy. A race strategist will immediately ask:
 > *"Why did the AI rank Driver X ahead of Driver Y?"*
 
-PaceIQ features an **Additive Tree Attribution Engine**. It calculates each driver's baseline starting expectation and measures the exact contribution of each factor:
+PaceIQ features an **Additive Tree Attribution Engine (TreeAttributionExplainer)**. It calculates each driver's baseline starting expectation and measures the exact contribution of each factor:
 
 ```
 ──────────────────────────────────────────────────────────────────────────
@@ -194,7 +266,29 @@ In the web interface, this renders as a dynamic **horizontal waterfall chart** t
 
 ---
 
-## 6. The Scorecard: How Well Did We Actually Do?
+## 7. Interactive Methodology Section (Frontend Tour)
+
+Directly on the home page beneath the season Grand Prix calendar, PaceIQ features an **interactive, animated Model & Methodology Center**:
+
+### 🎯 Key Interactive Modules to Show in Your Demo:
+1. **Interactive Anti-Leakage Pipeline Stepper:**
+   - Visualizes the 4 data stages: Raw Ingestion ➔ Clean-Air Pace Transformations ➔ Temporal Cutoff Gate ➔ Pre-computed Inference.
+   - Showcases the high-resolution 3D telemetry HUD graphic with live sensor telemetry tags.
+2. **Dual-Model Architecture Inspector:**
+   - Explains the separation between continuous regression (Model A) and calibrated probabilities (Model B).
+   - Displays gradient-boosted decision trees and compound tyre degradation curves.
+3. **Live SHAP Feature Importance Simulator:**
+   - Interactive clickable bars allowing the audience to inspect the relative weights of the top 5 engineered features:
+     - **Clean-Air Pace Delta (29.4%):** Fuel-normalized FP2/FP3 long runs.
+     - **Qualifying Grid Position & Delta (24.1%):** Starting slot and Q3 gap to pole.
+     - **Compound Degradation Coefficient (18.6%):** Thermal wear rates across Soft, Medium, Hard.
+     - **Constructor Form & Aero Momentum (14.8%):** Rolling 5-race upgrade index.
+     - **Pit Loss & Safety Car Sensitivity (13.1%):** Pit lane box transit time penalty.
+   - Shows signed delta impacts and primary telemetry sensor feeds live in the UI.
+
+---
+
+## 8. The Scorecard: How Well Did We Actually Do?
 
 We tested PaceIQ on a true **Holdout Test Set** (an unseen Grand Prix). We compared its performance against two industry baselines:
 - **Baseline 1 (Grid Position)**: Assuming drivers simply finish where they qualified on Saturday.
@@ -227,12 +321,12 @@ We tested PaceIQ on a true **Holdout Test Set** (an unseen Grand Prix). We compa
 2. **True Probabilistic Calibration**: While qualifying grid position provides a strong baseline for finishing order, it cannot provide risk assessment. PaceIQ matches grid-level ranking precision while providing calibrated overtaking and podium odds.
 3. **Software Health**:
    - `pytest backend/tests -v` $\rightarrow$ **15 / 15 Passed (100%)** 🟢
-   - `ruff check backend/` $\rightarrow$ **0 Errors** 🟢
-   - `npm run build` $\rightarrow$ **0 Type Errors, 447 ms Build Time** ⚡
+   - `npm run build` $\rightarrow$ **0 Type Errors, Production Ready** ⚡
+   - `GET /api/health` $\rightarrow$ **Database & Model Status OK** 🟢
 
 ---
 
-## 7. Full-Stack Software Architecture
+## 9. Full-Stack Software Architecture
 
 ```mermaid
 flowchart TD
@@ -249,17 +343,17 @@ flowchart TD
 
     subgraph API_TIER["FASTAPI REST SERVICE"]
         E & F & G --> H[FastAPI Web Server :8000]
-        H --> I["/races (Calendar)"]
-        H --> J["/races/:id (Predictions)"]
-        H --> K["/drivers/:id (Attributions)"]
-        H --> L["/game (Podium Challenge)"]
+        H --> I["/api/races (Calendar & Predictions)"]
+        H --> J["/api/health (Service & Model Status)"]
+        H --> K["/api/drivers (SHAP Attributions)"]
+        H --> L["/api/stints (Tyre Compounding)"]
     end
 
     subgraph UI_TIER["FRONTEND CLIENT (REACT 19 + VITE)"]
         H -->|JSON over HTTP| M[Pit-Wall Telemetry Dashboard :5173]
         M --> N[Recharts Telemetry Graphs]
-        M --> O[Fantasy Podium Game & Leaderboard]
-        M --> P[Shareable Telemetry Card Generator]
+        M --> O[Interactive ML Methodology Section]
+        M --> P[Strategy Replay & Tyre Timelines]
     end
 ```
 
@@ -269,25 +363,24 @@ flowchart TD
 f1/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py             # 🔌 FastAPI endpoints (/races, /drivers, /game)
-│   │   ├── models.py           # 🗄️ SQLAlchemy DB schemas (Drivers, Laps, Results)
+│   │   ├── main.py             # 🔌 FastAPI endpoints (/api/races, /api/health, /api/drivers)
+│   │   ├── models.py           # 🗄️ SQLAlchemy DB schemas (Drivers, Laps, Stints, Predictions)
 │   │   ├── schemas.py          # 🛡️ Pydantic validation schemas
-│   │   └── scoring.py          # 🎮 Fantasy points engine (+25 / +10 pts)
+│   │   └── config.py           # ⚙️ Hyperparameters & paths
 │   ├── pipeline/
 │   │   ├── openf1_client.py    # 🪣 Token-bucket rate-limited API client
-│   │   ├── tracinginsights_client.py # 🏎️ Telemetry scraper for FastF1 archives
 │   │   ├── transform.py        # 🧹 Lap time sanitization & outlier filter
 │   │   ├── features.py         # 🧱 Zero-leakage pre-race feature store
-│   │   └── train.py            # 🌲 LightGBM training & tree explainer
+│   │   └── train.py            # 🌲 LightGBM training & TreeAttributionExplainer
 │   └── tests/                  # 🧪 15 Unit & Integration tests
 ├── frontend/
 │   ├── src/
 │   │   ├── components/         # 🧩 Modular React components
-│   │   │   ├── ContributionChart.tsx # 📊 Horizontal feature attribution waterfall
-│   │   │   ├── LapChart.tsx          # 📈 Multi-driver lap-by-lap line charts
-│   │   │   ├── StintTimeline.tsx     # 🔴 Tyre compound duration timeline
-│   │   │   └── ShareCard.tsx         # 🎴 Telemetry social prediction card
-│   │   ├── pages/              # 📄 7 responsive route pages
+│   │   │   ├── ModelMethodologySection.tsx # 🧠 Interactive ML Architecture Showcase
+│   │   │   ├── HeroSection.tsx             # 🏎️ High-Impact F1 Hero & Quick Jump CTAs
+│   │   │   ├── NextRaceHighlight.tsx       # 🔮 Upcoming Race Spotlight
+│   │   │   └── RaceCard.tsx                # 🏁 Grand Prix Card
+│   │   ├── pages/              # 📄 Responsive route pages (RacesPage, RaceDetailPage, ReplayPage)
 │   │   └── styles/tokens.css   # 🎨 Semantic Dark-Theme Design Tokens
 │   └── package.json
 └── PROJECT_EXPLAINER.md        # 📖 This Document
@@ -295,68 +388,26 @@ f1/
 
 ---
 
-## 8. The Pit-Wall Experience & Fantasy Game
+## 10. Live Hosted Deployments & Troubleshooting
 
-Machine learning models should not live in terminal notebooks; they belong in the hands of users. We built a pit-wall interface engineered for racing fans:
+PaceIQ is deployed and accessible in the cloud:
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│  PACEIQ // STRATEGY REPLAY LAB                                         │
-│  [Grand Prix: Bahrain 2026]  [Session: Race]  [Laps: 57]              │
-├────────────────────────────────────────────────────────────────────────┤
-│  TYRE STINT TIMELINE                                                   │
-│  VER: [ SOFT (L1-18) ]──[ MEDIUM (L19-38) ]──[ HARD (L39-57) ]        │
-│  NOR: [ MEDIUM (L1-22) ]────[ HARD (L23-45) ]──[ SOFT (L46-57) ]       │
-├────────────────────────────────────────────────────────────────────────┤
-│  PODIUM CHALLENGE GAME                                                 │
-│  Your Pick:  P1: VER (25 pts)  │  P2: NOR (25 pts)  │  P3: PIA (10 pts)│
-│  Total Score: 60 / 75 PTS  [CHAMPIONSHIP RANK: #3]                    │
-└────────────────────────────────────────────────────────────────────────┘
-```
+- **Backend API (Render):**  
+  🔗 [`https://pace-iq.onrender.com`](https://pace-iq.onrender.com)  
+  - Live Health Route: [`https://pace-iq.onrender.com/api/health`](https://pace-iq.onrender.com/api/health)  
+  - Swagger Documentation: [`https://pace-iq.onrender.com/docs`](https://pace-iq.onrender.com/docs)  
+  *(Note: Free tier instances cold-start in ~30-45s after periods of inactivity).*
 
-- **Strategy Replay (`/replay`)**: Select up to 4 drivers to compare their lap times simultaneously with color-coded tyre compounds (Soft = Red, Medium = Yellow, Hard = White).
-- **Podium Prediction Game (`/game`)**: Guess P1, P2, and P3 before the session lock. Score **+25 points** for exact steps, **+10 points** for podium drivers in different slots.
-- **Social Share Card (`/card/:id`)**: Export a stylized graphic card showing your predictions vs. the AI's predictions with one-click clipboard copying.
+- **Frontend Client (Vercel):**  
+  🔗 [`https://pace-iq-one.vercel.app`](https://pace-iq-one.vercel.app)  
+
+> [!TIP]  
+> **Presenting in India / ISP Note:**  
+> Some Indian internet service providers (Jio, Airtel, ACT) occasionally block or drop packets to `*.vercel.app` domains. If you experience an `ERR_CONNECTION_TIMED_OUT`, switch your browser to **Secure DNS** (Cloudflare `1.1.1.1` in Chrome settings) or run the frontend locally using `npm run dev`.
 
 ---
 
-## 9. Hands-On: Run It Yourself in 5 Minutes
-
-You can run the entire PaceIQ system locally on your development machine:
-
-### 1. Launch the Backend
-```bash
-# 1. Open your terminal in the backend directory
-cd backend
-
-# 2. Activate the virtual environment
-.\.venv\Scripts\activate      # Windows
-# source .venv/bin/activate   # Linux / macOS
-
-# 3. Start the FastAPI API server
-python -m uvicorn backend.app.main:app --port 8000 --reload
-```
-*Interactive Swagger API documentation will be available at `http://127.0.0.1:8000/docs`.*
-
-### 2. Launch the Frontend
-```bash
-# 1. Open a new terminal in the frontend directory
-cd frontend
-
-# 2. Start the Vite React development server
-npm run dev
-```
-*The web application will open at `http://localhost:5173`.*
-
-### 3. Run the Automated Test Suite
-```bash
-python -m pytest backend/tests -v
-```
-*All 15 automated verification tests will run in under 2 seconds.*
-
----
-
-## 10. F1 & Data Science Glossary
+## 11. F1 & Data Science Glossary
 
 > [!TIP]  
 > Keep these terms handy when discussing the project in interviews or technical demos!
@@ -366,6 +417,7 @@ python -m pytest backend/tests -v
 | **Data Leakage** | Data Science | An error where data from the future is accidentally fed into a machine learning model during training. |
 | **Gradient Boosting** | Data Science | An ensemble method where decision trees are built sequentially, each learning to fix the errors made by previous trees. |
 | **Isotonic Calibration** | Data Science | A statistical method that aligns predicted probabilities with true real-world frequencies. |
+| **SHAP Values** | Data Science | Shapley Additive Explanations: Mathematical measure of how much each feature contributed to a specific prediction. |
 | **Spearman Rank ($\rho$)** | Statistics | A metric from $-1.0$ to $+1.0$ measuring how accurately an algorithm predicts the order/ranking of a list. |
 | **Brier Score** | Statistics | A penalty metric measuring how accurate probabilistic forecasts are (lower is better; $<0.10$ is considered elite). |
 | **Token Bucket** | Systems | An algorithm that regulates network traffic to prevent API rate-limit errors. |

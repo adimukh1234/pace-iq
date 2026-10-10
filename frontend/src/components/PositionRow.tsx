@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import type { PredictedOrderRow, ActualOrderRow } from "../types";
+import { DriverAvatar } from "./DriverAvatar";
 
 export const PositionRow: React.FC<{
   sessionKey: number;
@@ -73,14 +74,12 @@ export const PositionRow: React.FC<{
 
       {/* Driver & Team */}
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", minWidth: 0 }}>
-        <div
-          style={{
-            width: "4px",
-            height: "28px",
-            backgroundColor: row.team_colour || "var(--color-accent-red)",
-            borderRadius: "2px",
-            flexShrink: 0,
-          }}
+        <DriverAvatar
+          url={row.headshot_url}
+          name={row.name_acronym}
+          driverNumber={row.driver_number}
+          teamColour={row.team_colour}
+          size="md"
         />
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)", flexWrap: "wrap" }}>

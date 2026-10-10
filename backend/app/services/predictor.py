@@ -86,7 +86,12 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
 
         # Predicted podium (P1, P2, P3)
         pred_query = text("""
-            SELECT p.driver_number, d.name_acronym, d.team_colour
+            SELECT p.driver_number, d.name_acronym, d.team_colour,
+                   COALESCE(
+                       d.headshot_url,
+                       (SELECT d_sub.headshot_url FROM drivers d_sub WHERE d_sub.driver_number = d.driver_number AND d_sub.headshot_url IS NOT NULL LIMIT 1),
+                       (SELECT d_sub.headshot_url FROM drivers d_sub WHERE UPPER(d_sub.name_acronym) = UPPER(d.name_acronym) AND d_sub.headshot_url IS NOT NULL LIMIT 1)
+                   ) AS headshot_url
             FROM predictions p
             JOIN drivers d ON p.session_key = d.session_key AND p.driver_number = d.driver_number
             WHERE p.session_key = :s_key AND p.model_version = 'paceiq_v1'
@@ -99,6 +104,7 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
                 driver_number=int(p[0]),
                 name_acronym=str(p[1]),
                 team_colour=str(p[2]),
+                headshot_url=str(p[3]) if p[3] else None,
             )
             for p in pred_podium_rows
         ]
@@ -108,7 +114,12 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
         result_status = None
         if is_completed:
             act_query = text("""
-                SELECT r.driver_number, d.full_name, d.name_acronym, d.team_name, d.team_colour, r.position
+                SELECT r.driver_number, d.name_acronym, d.team_colour, r.position,
+                       COALESCE(
+                           d.headshot_url,
+                           (SELECT d_sub.headshot_url FROM drivers d_sub WHERE d_sub.driver_number = d.driver_number AND d_sub.headshot_url IS NOT NULL LIMIT 1),
+                           (SELECT d_sub.headshot_url FROM drivers d_sub WHERE UPPER(d_sub.name_acronym) = UPPER(d.name_acronym) AND d_sub.headshot_url IS NOT NULL LIMIT 1)
+                       ) AS headshot_url
                 FROM session_results r
                 JOIN drivers d ON r.session_key = d.session_key AND r.driver_number = d.driver_number
                 WHERE r.session_key = :s_key AND r.position <= 3
@@ -119,10 +130,9 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
                 actual_podium = [
                     PredictedDriverPodium(
                         driver_number=int(a[0]),
-                        full_name=str(a[1]),
-                        name_acronym=str(a[2]),
-                        team_name=str(a[3]),
-                        team_colour=str(a[4]),
+                        name_acronym=str(a[1]),
+                        team_colour=str(a[2]),
+                        headshot_url=str(a[4]) if a[4] else None,
                     )
                     for a in act_rows[:3]
                 ]
@@ -179,7 +189,12 @@ def get_race_detail(session_key: int, db: DBSession) -> RaceDetailResponse | Non
     # Fetch predictions
     pred_query = text("""
         SELECT p.driver_number, d.full_name, d.name_acronym, d.team_name, d.team_colour,
-               p.predicted_position, p.podium_probability
+               p.predicted_position, p.podium_probability,
+               COALESCE(
+                   d.headshot_url,
+                   (SELECT d_sub.headshot_url FROM drivers d_sub WHERE d_sub.driver_number = d.driver_number AND d_sub.headshot_url IS NOT NULL LIMIT 1),
+                   (SELECT d_sub.headshot_url FROM drivers d_sub WHERE UPPER(d_sub.name_acronym) = UPPER(d.name_acronym) AND d_sub.headshot_url IS NOT NULL LIMIT 1)
+               ) AS headshot_url
         FROM predictions p
         JOIN drivers d ON p.session_key = d.session_key AND p.driver_number = d.driver_number
         WHERE p.session_key = :session_key AND p.model_version = 'paceiq_v1'
@@ -195,6 +210,7 @@ def get_race_detail(session_key: int, db: DBSession) -> RaceDetailResponse | Non
             team_colour=str(p[4]),
             predicted_position=int(p[5]),
             podium_probability=float(p[6]),
+            headshot_url=str(p[7]) if p[7] else None,
         )
         for p in pred_rows
     ]
@@ -202,7 +218,12 @@ def get_race_detail(session_key: int, db: DBSession) -> RaceDetailResponse | Non
     # Fetch actual results
     act_query = text("""
         SELECT r.driver_number, d.full_name, d.name_acronym, d.team_name, d.team_colour,
-               r.position, r.dnf, r.points
+               r.position, r.dnf, r.points,
+               COALESCE(
+                   d.headshot_url,
+                   (SELECT d_sub.headshot_url FROM drivers d_sub WHERE d_sub.driver_number = d.driver_number AND d_sub.headshot_url IS NOT NULL LIMIT 1),
+                   (SELECT d_sub.headshot_url FROM drivers d_sub WHERE UPPER(d_sub.name_acronym) = UPPER(d.name_acronym) AND d_sub.headshot_url IS NOT NULL LIMIT 1)
+               ) AS headshot_url
         FROM session_results r
         JOIN drivers d ON r.session_key = d.session_key AND r.driver_number = d.driver_number
         WHERE r.session_key = :session_key
@@ -238,6 +259,7 @@ def get_race_detail(session_key: int, db: DBSession) -> RaceDetailResponse | Non
                     delta=delta,
                     dnf=bool(a[6]),
                     points=float(a[7] or 0.0),
+                    headshot_url=str(a[8]) if a[8] else None,
                 )
             )
             if p_pos is not None:
@@ -308,7 +330,12 @@ def get_driver_explanation(
     """Retrieve precomputed SHAP attribution and summary for a driver prediction."""
     query = text("""
         SELECT p.predicted_position, p.podium_probability, p.shap_values,
-               d.full_name, d.team_name, d.team_colour
+               d.full_name, d.team_name, d.team_colour,
+               COALESCE(
+                   d.headshot_url,
+                   (SELECT d_sub.headshot_url FROM drivers d_sub WHERE d_sub.driver_number = d.driver_number AND d_sub.headshot_url IS NOT NULL LIMIT 1),
+                   (SELECT d_sub.headshot_url FROM drivers d_sub WHERE UPPER(d_sub.name_acronym) = UPPER(d.name_acronym) AND d_sub.headshot_url IS NOT NULL LIMIT 1)
+               ) AS headshot_url
         FROM predictions p
         JOIN drivers d ON p.session_key = d.session_key AND p.driver_number = d.driver_number
         WHERE p.session_key = :session_key
@@ -340,5 +367,6 @@ def get_driver_explanation(
         positive=pos_contribs,
         negative=neg_contribs,
         summary=summary_text,
+        headshot_url=str(row[6]) if row[6] else None,
     )
 

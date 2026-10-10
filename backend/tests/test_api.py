@@ -33,3 +33,17 @@ def test_nonexistent_session_404():
     assert resp.status_code == 404
     data = resp.json()
     assert data["error"]["code"] == "SESSION_NOT_FOUND"
+
+
+def test_races_endpoint_and_headshots():
+    """Verify /api/races returns 200 and schema includes headshot_url field."""
+    resp = client.get("/api/races?year=2024")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert isinstance(data, list)
+    if len(data) > 0:
+        first_race = data[0]
+        if first_race.get("predicted_podium"):
+            podium_driver = first_race["predicted_podium"][0]
+            assert "headshot_url" in podium_driver
+

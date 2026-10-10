@@ -22,6 +22,7 @@ export interface PredictedDriverPodium {
   driver_number: number;
   name_acronym: string;
   team_colour: string;
+  headshot_url?: string | null;
 }
 
 export interface RaceListItem {
@@ -46,6 +47,7 @@ export interface PredictedOrderRow {
   team_colour: string;
   predicted_position: number;
   podium_probability: number;
+  headshot_url?: string | null;
 }
 
 export interface ActualOrderRow {
@@ -59,6 +61,7 @@ export interface ActualOrderRow {
   delta?: number | null;
   dnf: boolean;
   points: number;
+  headshot_url?: string | null;
 }
 
 export interface RaceDetailResponse {
@@ -123,5 +126,6 @@ export interface DriverExplainResponse {
   positive: FeatureContribution[];
   negative: FeatureContribution[];
   summary: string;
+  headshot_url?: string | null;
 }
 
