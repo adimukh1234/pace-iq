@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Zap } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { racesApi } from "../api/client";
 import type { RaceListItem, SeasonSummary } from "../types";
 import { RaceCard } from "../components/RaceCard";
-import { LoadingState, ErrorState, EmptyState } from "../components/States";
+import { SkeletonCard, ErrorState, EmptyState } from "../components/States";
+import { HeroSection } from "../components/HeroSection";
+import { NextRaceHighlight } from "../components/NextRaceHighlight";
 
 export const RacesPage: React.FC = () => {
   const [seasons, setSeasons] = useState<SeasonSummary[]>([]);
@@ -63,152 +65,41 @@ export const RacesPage: React.FC = () => {
     loadRaces(selectedYear);
   }, [selectedYear, loadRaces]);
 
-  const completedCount = races.filter((r) => r.status === "completed").length;
-  const upcomingCount = races.filter((r) => r.status === "upcoming").length;
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-      {/* Hero Telemetry Banner */}
-      <section
-        style={{
-          backgroundColor: "var(--color-surface)",
-          backdropFilter: "var(--glass-blur)",
-          WebkitBackdropFilter: "var(--glass-blur)",
-          border: "1px solid var(--color-surface-outline)",
-          borderRadius: "var(--radius-lg)",
-          boxShadow: "var(--glass-shadow)",
-          padding: "var(--space-6)",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            width: "300px",
-            height: "100%",
-            background: "radial-gradient(circle at top right, rgba(225, 6, 0, 0.08) 0%, transparent 70%)",
-            pointerEvents: "none",
-          }}
-        />
+      {/* High-Impact Formula 1 Hero Section */}
+      <HeroSection />
 
-        <div style={{ maxWidth: "700px" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "4px 8px",
-              backgroundColor: "rgba(225, 6, 0, 0.1)",
-              border: "1px solid rgba(225, 6, 0, 0.3)",
-              borderRadius: "var(--radius-sm)",
-              fontSize: "var(--text-xs)",
-              fontFamily: "var(--font-mono)",
-              color: "var(--color-accent-red)",
-              marginBottom: "var(--space-3)",
-            }}
-          >
-            <Zap size={12} />
-            <span>AI RACE OUTCOME ENGINE</span>
-          </div>
-
-          <h1
-            style={{
-              fontFamily: "var(--font-heading)",
-              fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
-              lineHeight: 1.2,
-              color: "var(--color-text-primary)",
-              margin: "0 0 var(--space-3) 0",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Predictive Grand Prix Telemetry & Strategy Lab
-          </h1>
-
-          <p
-            style={{
-              fontSize: "var(--text-sm)",
-              lineHeight: 1.6,
-              color: "var(--color-text-secondary)",
-              margin: 0,
-            }}
-          >
-            Pre-race finishing order probabilities and pit strategy models calibrated with isotonic regression
-            and tree attribution. Pure pre-race features with zero target-race leakage.
-          </p>
-        </div>
-
-        {/* Stats Ribbon */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-            gap: "var(--space-4)",
-            marginTop: "var(--space-5)",
-            paddingTop: "var(--space-4)",
-            borderTop: "1px solid var(--color-border-subtle)",
-          }}
-        >
-          <div>
-            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--color-text-muted)" }}>
-              TOTAL ROUNDS
-            </div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-lg)", fontWeight: 700 }}>
-              {races.length}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--color-text-muted)" }}>
-              COMPLETED
-            </div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--color-accent-green)" }}>
-              {completedCount}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--color-text-muted)" }}>
-              UPCOMING
-            </div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--color-accent-cyan)" }}>
-              {upcomingCount}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--color-text-muted)" }}>
-              ENGINE CALIBRATION
-            </div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-accent-amber)", marginTop: "4px" }}>
-              LIGHTGBM v1.0
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Featured Unrun Race Spotlight: Singapore GP 2026 Model Predictions */}
+      <NextRaceHighlight />
 
       {/* Season Picker Controls */}
       <div
+        id="races-section"
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
           gap: "var(--space-3)",
+          scrollMarginTop: "24px",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
           <Calendar size={16} color="var(--color-text-muted)" />
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
             SELECT SEASON:
           </span>
-          <div style={{ display: "flex", gap: "6px" }}>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {seasons.map((s) => (
               <button
                 key={s.year}
                 type="button"
                 onClick={() => setSelectedYear(s.year)}
                 style={{
-                  padding: "4px 12px",
+                  minHeight: "44px",
+                  minWidth: "54px",
+                  padding: "6px 14px",
                   borderRadius: "var(--radius-sm)",
                   fontFamily: "var(--font-mono)",
                   fontSize: "var(--text-xs)",
@@ -221,6 +112,9 @@ export const RacesPage: React.FC = () => {
                   borderColor: selectedYear === s.year ? "var(--color-accent-red)" : "var(--color-surface-outline)",
                   boxShadow: selectedYear === s.year ? "0 0 16px rgba(225, 6, 0, 0.45)" : "none",
                   cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 {s.year}
@@ -234,9 +128,19 @@ export const RacesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content State Rendering */}
+      {/* Main Content State Rendering - With Skeleton Grid to Prevent Layout Shift */}
       {loading ? (
-        <LoadingState message="Loading season schedule and telemetry..." />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
+            gap: "var(--space-4)",
+          }}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       ) : error ? (
         <ErrorState message={error} onRetry={() => loadRaces(selectedYear)} />
       ) : races.length === 0 ? (
@@ -250,7 +154,7 @@ export const RacesPage: React.FC = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
             gap: "var(--space-4)",
           }}
         >

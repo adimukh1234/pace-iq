@@ -58,6 +58,8 @@ export const LapChart: React.FC<{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
+          gap: "var(--space-3)",
           marginBottom: "var(--space-4)",
         }}
       >
@@ -78,15 +80,21 @@ export const LapChart: React.FC<{
         </div>
 
         <button
+          type="button"
           onClick={() => setShowTable(!showTable)}
           style={{
             backgroundColor: "var(--color-surface-2)",
             color: "var(--color-text-secondary)",
             border: "1px solid var(--color-surface-outline)",
             borderRadius: "var(--radius-sm)",
-            padding: "4px 12px",
+            minHeight: "44px",
+            padding: "6px 14px",
             fontSize: "var(--type-label)",
             fontWeight: 600,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           {showTable ? "View Chart" : "Table View (Accessible)"}
@@ -112,6 +120,7 @@ export const LapChart: React.FC<{
                 unit="s"
               />
               <Tooltip
+                wrapperStyle={{ pointerEvents: "none", maxWidth: "min(280px, 85vw)" }}
                 contentStyle={{
                   backgroundColor: "var(--color-surface-2)",
                   border: "1px solid var(--color-surface-outline)",

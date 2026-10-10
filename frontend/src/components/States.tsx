@@ -118,15 +118,21 @@ export const EmptyState: React.FC<{
       </p>
       {label && onAction && (
         <button
+          type="button"
           onClick={onAction}
           style={{
             backgroundColor: "var(--color-surface-2)",
             color: "var(--color-text-primary)",
             border: "1px solid var(--color-surface-outline)",
             borderRadius: "var(--radius-sm)",
-            padding: "var(--space-2) var(--space-4)",
+            minHeight: "44px",
+            padding: "8px 20px",
             fontSize: "var(--type-body-md)",
             fontWeight: 600,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           {label}
@@ -162,14 +168,20 @@ export const ErrorState: React.FC<{
     </p>
     {onRetry && (
       <button
+        type="button"
         onClick={onRetry}
         style={{
           backgroundColor: "var(--color-accent-red)",
           color: "#FFFFFF",
           borderRadius: "var(--radius-sm)",
-          padding: "var(--space-2) var(--space-5)",
+          minHeight: "44px",
+          padding: "8px 24px",
           fontSize: "var(--type-body-md)",
           fontWeight: 600,
+          cursor: "pointer",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         Retry

@@ -3,9 +3,7 @@ Pydantic Schemas for PaceIQ API (Pydantic v2).
 Complies with TECH_SPEC.md §8 and IMPLEMENTATION_RULES.md (Rules 29, 30, 32, 33).
 """
 
-from typing import Any
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel
 
 
 # Standard Error Shape (Rule 30)
@@ -146,64 +144,3 @@ class DriverExplainResponse(BaseModel):
     negative: list[FeatureContribution]
     summary: str
 
-
-# Prediction Game
-class PredictionSubmitRequest(BaseModel):
-    username: str = Field(min_length=3, max_length=24, pattern=r"^[a-zA-Z0-9_]+$")
-    session_key: int
-    p1: int
-    p2: int
-    p3: int
-
-    @field_validator("p3")
-    @classmethod
-    def validate_distinct_picks(cls, v: int, info):
-        data = info.data
-        p1 = data.get("p1")
-        p2 = data.get("p2")
-        p3 = v
-        if len({p1, p2, p3}) < 3:
-            raise ValueError(
-                "Picks for P1, P2, and P3 must be distinct driver numbers."
-            )
-        return v
-
-
-class PredictionSubmitResponse(BaseModel):
-    id: int
-    username: str
-    session_key: int
-    p1: int
-    p2: int
-    p3: int
-    submitted_at: str
-
-
-class LeaderboardEntry(BaseModel):
-    rank: int
-    username: str
-    total_points: int
-    exact_picks: int
-    podium_hits: int
-    submitted_at: str
-
-
-class LeaderboardResponse(BaseModel):
-    session_key: int | None
-    leaderboard: list[LeaderboardEntry]
-
-
-class ShareCardResponse(BaseModel):
-    user_prediction_id: int
-    username: str
-    session_key: int
-    race_name: str
-    circuit_name: str
-    date: str
-    score: int
-    user_picks: list[dict[str, Any]]
-    model_picks: list[dict[str, Any]]
-    actual_podium: list[dict[str, Any]]
-    result_summary: str
-    model_version: str
-    generated_at: str

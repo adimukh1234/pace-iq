@@ -1,39 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Flag, Trophy, User, Sparkles } from "lucide-react";
+import { Flag, Activity } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
-  const [username, setUsername] = useState<string>("Fan_1");
-  const [isEditingUser, setIsEditingUser] = useState(false);
-  const [inputVal, setInputVal] = useState("");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("paceiq.username");
-    if (saved) {
-      setUsername(saved);
-      setInputVal(saved);
-    } else {
-      const defaultName = `Driver_${Math.floor(100 + Math.random() * 900)}`;
-      localStorage.setItem("paceiq.username", defaultName);
-      setUsername(defaultName);
-      setInputVal(defaultName);
-    }
-  }, []);
-
-  const saveUsername = () => {
-    const cleaned = inputVal.trim().replace(/[^a-zA-Z0-9_]/g, "");
-    if (cleaned.length >= 3 && cleaned.length <= 24) {
-      setUsername(cleaned);
-      localStorage.setItem("paceiq.username", cleaned);
-    }
-    setIsEditingUser(false);
-  };
 
   const navItems = [
     { label: "Races", path: "/", icon: Flag },
-    { label: "Game", path: "/game", icon: Sparkles },
-    { label: "Leaderboard", path: "/game/leaderboard", icon: Trophy },
   ];
 
   return (
@@ -83,7 +56,7 @@ export const Navbar: React.FC = () => {
             {navItems.map((item) => {
               const active =
                 item.path === "/"
-                  ? location.pathname === "/"
+                  ? location.pathname === "/" || location.pathname.startsWith("/races")
                   : location.pathname.startsWith(item.path);
               const Icon = item.icon;
               return (
@@ -118,61 +91,36 @@ export const Navbar: React.FC = () => {
           </nav>
         </div>
 
-        {/* User Badge */}
+        {/* Live System Badge */}
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-          {isEditingUser ? (
-            <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>
-              <input
-                type="text"
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                maxLength={24}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "var(--space-2)",
+              backgroundColor: "var(--color-surface-1)",
+              border: "1px solid var(--color-surface-outline)",
+              borderRadius: "var(--radius-pill)",
+              padding: "var(--space-1) var(--space-3)",
+              color: "var(--color-text-secondary)",
+              fontSize: "var(--type-label)",
+              fontFamily: "var(--font-data)",
+            }}
+          >
+            <Activity size={14} color="var(--color-accent-teal)" />
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <span
                 style={{
-                  backgroundColor: "var(--color-surface-2)",
-                  color: "var(--color-text-primary)",
-                  border: "1px solid var(--color-surface-outline)",
-                  borderRadius: "var(--radius-sm)",
-                  padding: "var(--space-1) var(--space-2)",
-                  fontSize: "var(--type-body-md)",
-                  fontFamily: "var(--font-data)",
-                  outline: "none",
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "50%",
+                  backgroundColor: "var(--color-accent-teal)",
+                  boxShadow: "0 0 6px var(--color-accent-teal)",
                 }}
               />
-              <button
-                onClick={saveUsername}
-                style={{
-                  backgroundColor: "var(--color-accent-teal)",
-                  color: "var(--color-bg-base)",
-                  borderRadius: "var(--radius-sm)",
-                  padding: "var(--space-1) var(--space-3)",
-                  fontSize: "var(--type-label)",
-                  fontWeight: 700,
-                }}
-              >
-                Save
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setIsEditingUser(true)}
-              title="Click to change your username"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "var(--space-2)",
-                backgroundColor: "var(--color-surface-1)",
-                border: "1px solid var(--color-surface-outline)",
-                borderRadius: "var(--radius-pill)",
-                padding: "var(--space-1) var(--space-3)",
-                color: "var(--color-text-secondary)",
-                fontSize: "var(--type-label)",
-                fontFamily: "var(--font-data)",
-              }}
-            >
-              <User size={14} color="var(--color-accent-teal)" />
-              <span>{username}</span>
-            </button>
-          )}
+              TELEMETRY LIVE
+            </span>
+          </div>
         </div>
       </header>
     </>

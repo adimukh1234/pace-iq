@@ -10,15 +10,15 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# Data & Model Artefacts (pipeline generates these)
-backend/data/
-backend/models/*.joblib
-backend/models/*.png
-!backend/models/.gitkeep
+# Data & Model Artefacts (raw downloads ignored, production db and model whitelisted)
+backend/data/raw/
+backend/data/logs/
 data/raw/
 data/logs/
-*.db
 *.sqlite3
+!backend/data/paceiq.db
+!backend/models/paceiq_v1.joblib
+
 
 # Frontend
 frontend/node_modules/

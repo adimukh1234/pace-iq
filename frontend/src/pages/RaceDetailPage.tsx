@@ -5,18 +5,16 @@ import {
   Calendar,
   MapPin,
   Activity,
-  Award,
   ChevronRight,
-  TrendingUp,
   CheckCircle2,
   Flag,
 } from "lucide-react";
 import { racesApi } from "../api/client";
 import type { RaceDetailResponse, RaceStintsResponse } from "../types";
 import { PositionRow } from "../components/PositionRow";
-import { PickForm } from "../components/PickForm";
 import { StintTimeline } from "../components/StintTimeline";
-import { LoadingState, ErrorState } from "../components/States";
+import { RaceStatsVisualizer } from "../components/RaceStatsVisualizer";
+import { ErrorState, SkeletonTable } from "../components/States";
 
 export const RaceDetailPage: React.FC = () => {
   const { sessionKey } = useParams<{ sessionKey: string }>();
@@ -24,7 +22,6 @@ export const RaceDetailPage: React.FC = () => {
   const [stintsData, setStintsData] = useState<RaceStintsResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"telemetry" | "picks">("telemetry");
   const [viewMode, setViewMode] = useState<"predicted" | "actual">("predicted");
 
   const sKey = Number(sessionKey);
@@ -57,7 +54,13 @@ export const RaceDetailPage: React.FC = () => {
   }, [sessionKey]);
 
   if (loading) {
-    return <LoadingState message="Calculating grid telemetry and predictions..." />;
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+        <div className="skeleton" style={{ height: "140px", width: "100%", borderRadius: "var(--radius-lg)" }} />
+        <div className="skeleton" style={{ height: "300px", width: "100%", borderRadius: "var(--radius-lg)" }} />
+        <SkeletonTable rows={8} />
+      </div>
+    );
   }
 
   if (error || !race) {
@@ -230,58 +233,6 @@ export const RaceDetailPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Tabs / Toggle View */}
-      <div
-        style={{
-          display: "flex",
-          borderBottom: "1px solid var(--color-border-subtle)",
-          gap: "var(--space-4)",
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setActiveTab("telemetry")}
-          style={{
-            padding: "8px 12px",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "telemetry" ? "2px solid var(--color-accent-red)" : "2px solid transparent",
-            color: activeTab === "telemetry" ? "var(--color-text-primary)" : "var(--color-text-muted)",
-            fontFamily: "var(--font-mono)",
-            fontSize: "var(--text-xs)",
-            fontWeight: 700,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-        >
-          <TrendingUp size={14} />
-          <span>ORDER & ATTRITION</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("picks")}
-          style={{
-            padding: "8px 12px",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "picks" ? "2px solid var(--color-accent-red)" : "2px solid transparent",
-            color: activeTab === "picks" ? "var(--color-text-primary)" : "var(--color-text-muted)",
-            fontFamily: "var(--font-mono)",
-            fontSize: "var(--text-xs)",
-            fontWeight: 700,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-        >
-          <Award size={14} />
-          <span>PODIUM CHALLENGE</span>
-        </button>
-      </div>
 
       {/* Real vs Predicted Podium Benchmark Banner if completed */}
       {race.actual && race.actual.length >= 3 && race.predicted && race.predicted.length >= 3 && (
@@ -292,7 +243,7 @@ export const RaceDetailPage: React.FC = () => {
             borderRadius: "var(--radius-lg)",
             padding: "var(--space-4) var(--space-5)",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
             gap: "var(--space-4)",
             alignItems: "center",
           }}
@@ -311,7 +262,7 @@ export const RaceDetailPage: React.FC = () => {
             >
               AI Predicted Podium
             </div>
-            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
               {race.predicted.slice(0, 3).map((p, idx) => (
                 <div
                   key={p.driver_number}
@@ -368,7 +319,7 @@ export const RaceDetailPage: React.FC = () => {
               <CheckCircle2 size={13} />
               <span>Official Sunday Podium (Real Result)</span>
             </div>
-            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
               {race.actual.slice(0, 3).map((a, idx) => {
                 const isExact = race.predicted[idx]?.driver_number === a.driver_number;
                 return (
@@ -420,8 +371,10 @@ export const RaceDetailPage: React.FC = () => {
         </div>
       )}
 
-      {activeTab === "telemetry" ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+      {/* Animated Race Statistics & Visualizations */}
+      <RaceStatsVisualizer race={race} />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
           {/* Order & Results Table with View Switcher */}
           <div
             style={{
@@ -470,14 +423,16 @@ export const RaceDetailPage: React.FC = () => {
                     backgroundColor: "var(--color-surface-2)",
                     borderRadius: "var(--radius-sm)",
                     padding: "3px",
-                    gap: "2px",
+                    gap: "4px",
+                    flexWrap: "wrap",
                   }}
                 >
                   <button
                     type="button"
                     onClick={() => setViewMode("predicted")}
                     style={{
-                      padding: "4px 12px",
+                      minHeight: "44px",
+                      padding: "6px 14px",
                       borderRadius: "var(--radius-sm)",
                       border: "none",
                       backgroundColor:
@@ -492,6 +447,9 @@ export const RaceDetailPage: React.FC = () => {
                       fontSize: "11px",
                       fontWeight: 700,
                       cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     PREDICTED ORDER
@@ -500,7 +458,8 @@ export const RaceDetailPage: React.FC = () => {
                     type="button"
                     onClick={() => setViewMode("actual")}
                     style={{
-                      padding: "4px 12px",
+                      minHeight: "44px",
+                      padding: "6px 14px",
                       borderRadius: "var(--radius-sm)",
                       border: "none",
                       backgroundColor:
@@ -515,8 +474,9 @@ export const RaceDetailPage: React.FC = () => {
                       fontSize: "11px",
                       fontWeight: 700,
                       cursor: "pointer",
-                      display: "flex",
+                      display: "inline-flex",
                       alignItems: "center",
+                      justifyContent: "center",
                       gap: "4px",
                     }}
                   >
@@ -556,7 +516,8 @@ export const RaceDetailPage: React.FC = () => {
                       to={`/races/${race.session_key}/drivers/${act.driver_number}`}
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "52px 1fr 100px 140px 32px",
+                        gridTemplateColumns: "64px 1fr 100px 140px 32px",
+                        columnGap: "var(--space-4)",
                         alignItems: "center",
                         backgroundColor: "var(--color-surface-1)",
                         borderBottom: "1px solid var(--color-surface-outline)",
@@ -577,6 +538,8 @@ export const RaceDetailPage: React.FC = () => {
                           fontFamily: "var(--font-display)",
                           fontSize: "1.2rem",
                           fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
+                          letterSpacing: "0.02em",
                           color: act.dnf
                             ? "var(--color-status-danger)"
                             : act.actual_position <= 3
@@ -698,17 +661,6 @@ export const RaceDetailPage: React.FC = () => {
             <StintTimeline stints={stintsData.stints} drivers={driverDetails} />
           )}
         </div>
-      ) : (
-        /* Podium Challenge Pick View */
-        <div style={{ maxWidth: "700px", margin: "0 auto", width: "100%" }}>
-          <PickForm
-            sessionKey={race.session_key}
-            raceName={race.meeting_name}
-            drivers={driverDetails}
-            isCompleted={race.status === "completed"}
-          />
-        </div>
-      )}
-    </div>
-  );
-};
+      </div>
+    );
+  };

@@ -19,7 +19,6 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    UniqueConstraint,
     create_engine,
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
@@ -228,38 +227,6 @@ class Prediction(Base):
     podium_probability = Column(Float, nullable=False)
     shap_values = Column(Text, nullable=False)  # JSON text
     created_at = Column(String, nullable=False)
-
-
-class UserPrediction(Base):
-    __tablename__ = "user_predictions"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String, nullable=False, index=True)
-    session_key = Column(
-        Integer, ForeignKey("sessions.session_key"), nullable=False, index=True
-    )
-    p1_driver = Column(Integer, nullable=False)
-    p2_driver = Column(Integer, nullable=False)
-    p3_driver = Column(Integer, nullable=False)
-    submitted_at = Column(String, nullable=False)
-
-    __table_args__ = (
-        UniqueConstraint("username", "session_key", name="uq_user_session_prediction"),
-    )
-
-
-class PredictionScore(Base):
-    __tablename__ = "prediction_scores"
-
-    prediction_id = Column(Integer, ForeignKey("user_predictions.id"), primary_key=True)
-    username = Column(String, nullable=False, index=True)
-    session_key = Column(Integer, nullable=False, index=True)
-    p1_exact = Column(Boolean, nullable=False)
-    p2_exact = Column(Boolean, nullable=False)
-    p3_exact = Column(Boolean, nullable=False)
-    podium_hits = Column(Integer, nullable=False)
-    total_points = Column(Integer, nullable=False)
-    scored_at = Column(String, nullable=False)
 
 
 def init_db():

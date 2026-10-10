@@ -16,6 +16,110 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Safe area variables & touch utilities */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --bottom-bar-height: 60px;
+}
+
+/* Text wrap & overflow safeguards */
+.text-break {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive Recharts tooltips (constrain on mobile so they never cover screen) */
+@media (max-width: 768px) {
+  .recharts-tooltip-wrapper {
+    max-width: min(280px, 85vw) !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Mobile body padding for thumb navigation bar */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(var(--bottom-bar-height) + var(--sab));
+  }
+  .mobile-thumb-bar {
+    display: block !important;
+  }
+}
+
+/* Position Row Responsive Layout (Desktop 5-col vs Mobile 4-col compact) */
+.position-row-link {
+  display: grid;
+  grid-template-columns: 60px 1fr 140px 80px 28px;
+  column-gap: var(--space-4);
+  align-items: center;
+  background-color: var(--color-surface-1);
+  border-bottom: 1px solid var(--color-surface-outline);
+  padding: var(--space-3) var(--space-4);
+  text-decoration: none;
+  min-height: 48px;
+  transition: background-color var(--duration-micro) ease;
+}
+
+@media (max-width: 680px) {
+  .position-row-link {
+    grid-template-columns: 44px 1fr auto 18px;
+    column-gap: var(--space-2);
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .position-row-prob-desktop {
+    display: none !important;
+  }
+
+  .position-row-prob-mobile {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 681px) {
+  .position-row-prob-mobile {
+    display: none !important;
+  }
+}
+
+/* KPI Cards Ribbon Responsive Spacing */
+.kpi-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+
+@media (max-width: 1024px) {
+  .kpi-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 580px) {
+  .kpi-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 /* Glassmorphism Surface Utility */

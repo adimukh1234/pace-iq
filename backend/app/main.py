@@ -1,6 +1,6 @@
 """
 Main FastAPI Application for PaceIQ.
-Provides REST API endpoints for races, predictions, explanations, and fan game.
+Provides REST API endpoints for races, predictions, and explanations.
 Complies with TECH_SPEC.md §8 and IMPLEMENTATION_RULES.md (Rules 29-33).
 """
 
@@ -23,7 +23,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from backend.app.config import MODELS_DIR
 from backend.app.db import SessionLocal, init_db
-from backend.app.routes import drivers, game, races
+from backend.app.routes import drivers, races
 from backend.app.schemas import HealthResponse
 
 
@@ -116,4 +116,3 @@ def health_check():
 # Include Feature Routers
 app.include_router(races.router, prefix="/api", tags=["Races"])
 app.include_router(drivers.router, prefix="/api", tags=["Drivers"])
-app.include_router(game.router, prefix="/api", tags=["Game"])

@@ -11,7 +11,7 @@ import type {
 } from "../types";
 import { LapChart } from "../components/LapChart";
 import { StintTimeline } from "../components/StintTimeline";
-import { LoadingState, ErrorState } from "../components/States";
+import { ErrorState } from "../components/States";
 
 export const ReplayPage: React.FC = () => {
   const { sessionKey } = useParams<{ sessionKey: string }>();
@@ -103,7 +103,14 @@ export const ReplayPage: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingState message="Loading Grand Prix replay telemetry and laps..." />;
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+        <div className="skeleton" style={{ height: "40px", width: "180px", borderRadius: "var(--radius-sm)" }} />
+        <div className="skeleton" style={{ height: "140px", width: "100%", borderRadius: "var(--radius-lg)" }} />
+        <div className="skeleton" style={{ height: "80px", width: "100%", borderRadius: "var(--radius-lg)" }} />
+        <div className="skeleton" style={{ height: "320px", width: "100%", borderRadius: "var(--radius-md)" }} />
+      </div>
+    );
   }
 
   if (error || !race) {
@@ -143,9 +150,11 @@ export const ReplayPage: React.FC = () => {
             fontSize: "var(--text-xs)",
             fontFamily: "var(--font-mono)",
             textDecoration: "none",
+            minHeight: "44px",
+            padding: "4px 8px",
           }}
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={16} />
           <span>BACK TO RACE PREDICTION</span>
         </Link>
       </div>
@@ -245,7 +254,8 @@ export const ReplayPage: React.FC = () => {
                 type="button"
                 onClick={() => toggleDriver(d.driver_number)}
                 style={{
-                  padding: "6px 12px",
+                  minHeight: "44px",
+                  padding: "8px 14px",
                   borderRadius: "var(--radius-sm)",
                   fontFamily: "var(--font-mono)",
                   fontSize: "var(--text-xs)",

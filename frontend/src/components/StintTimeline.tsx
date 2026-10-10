@@ -113,7 +113,7 @@ export const StintTimeline: React.FC<StintTimelineProps> = ({
 
         {/* Legend & Toggle */}
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
             {["SOFT", "MEDIUM", "HARD", "INTERMEDIATE", "WET"].map((c) => {
               const info = COMPOUND_CONFIG[c];
               return (
@@ -154,7 +154,8 @@ export const StintTimeline: React.FC<StintTimelineProps> = ({
             type="button"
             onClick={() => setViewMode(viewMode === "visual" ? "table" : "visual")}
             style={{
-              padding: "4px 10px",
+              minHeight: "44px",
+              padding: "6px 14px",
               fontSize: "var(--text-xs)",
               fontFamily: "var(--font-mono)",
               backgroundColor: "var(--color-surface-subtle)",
@@ -162,6 +163,9 @@ export const StintTimeline: React.FC<StintTimelineProps> = ({
               border: "1px solid var(--color-border)",
               borderRadius: "var(--radius-sm)",
               cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             {viewMode === "visual" ? "Table View" : "Visual Timeline"}
@@ -170,7 +174,7 @@ export const StintTimeline: React.FC<StintTimelineProps> = ({
       </div>
 
       {viewMode === "visual" ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", overflowX: "auto", minWidth: 0, paddingBottom: "4px" }}>
           {/* Lap Scale Markers */}
           <div
             style={{

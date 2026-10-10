@@ -1,13 +1,12 @@
 """
-Predictor and Game Service for PaceIQ.
-Handles race projections, explanations, scoring calculations, and leaderboard aggregation.
-Complies with IMPLEMENTATION_RULES.md (Rules 31, 34-38).
+Predictor Service for PaceIQ.
+Handles race projections and SHAP feature explanations.
+Complies with IMPLEMENTATION_RULES.md (Rule 31).
 """
 
 import json
 import logging
 import sys
-from datetime import UTC, datetime
 from pathlib import Path
 
 # Ensure project root is in sys.path
@@ -16,19 +15,13 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import pandas as pd
-from scipy.stats import spearmanr
 from sqlalchemy import text
 from sqlalchemy.orm import Session as DBSession
 
-from backend.app.db import (
-    PredictionScore,
-    UserPrediction,
-)
 from backend.app.schemas import (
     ActualOrderRow,
     DriverExplainResponse,
     FeatureContribution,
-    LeaderboardEntry,
     PredictedDriverPodium,
     PredictedOrderRow,
     RaceDetailResponse,
@@ -88,7 +81,6 @@ def get_races_for_season(year: int, db: DBSession) -> list[RaceListItem]:
     for r in rows:
         s_key = int(r[0])
         m_key = int(r[1])
-        s_date = str(r[5] or "")
         res_count = int(r[7] or 0)
         is_completed = res_count >= 10 or (int(r[6]) < 2026)
 
@@ -253,7 +245,9 @@ def get_race_detail(session_key: int, db: DBSession) -> RaceDetailResponse | Non
                 predicted_positions.append(p_pos)
 
         if len(actual_positions) >= 5:
-            corr, _ = spearmanr(actual_positions, predicted_positions)
+            s_act = pd.Series(actual_positions, dtype=float)
+            s_pred = pd.Series(predicted_positions, dtype=float)
+            corr = s_act.corr(s_pred, method="spearman")
             spearman_corr = round(float(corr), 3) if pd.notnull(corr) else 0.0
 
     return RaceDetailResponse(
@@ -348,107 +342,3 @@ def get_driver_explanation(
         summary=summary_text,
     )
 
-
-def score_and_store_prediction(
-    user_pred: UserPrediction, db: DBSession
-) -> PredictionScore | None:
-    """
-    Score a user pick against actual results using Rule 36:
-    - Exact match for P1, P2, P3: 3 points each
-    - In actual top 3 but different position: 1 point each
-    - Max score: 9 points
-    """
-    act_query = text("""
-        SELECT driver_number, position
-        FROM session_results
-        WHERE session_key = :session_key AND position <= 3
-        ORDER BY position ASC
-    """)
-    results = db.execute(act_query, {"session_key": user_pred.session_key}).fetchall()
-    if len(results) < 3:
-        return None  # Results not complete yet
-
-    actual_map = {int(r[0]): int(r[1]) for r in results}
-    actual_top3 = set(actual_map.keys())
-
-    p1 = user_pred.p1_driver
-    p2 = user_pred.p2_driver
-    p3 = user_pred.p3_driver
-
-    p1_exact = actual_map.get(p1) == 1
-    p2_exact = actual_map.get(p2) == 2
-    p3_exact = actual_map.get(p3) == 3
-
-    points = 0
-    podium_hits = 0
-
-    for pick, exact in [(p1, p1_exact), (p2, p2_exact), (p3, p3_exact)]:
-        if exact:
-            points += 3
-            podium_hits += 1
-        elif pick in actual_top3:
-            points += 1
-            podium_hits += 1
-
-    score = PredictionScore(
-        prediction_id=user_pred.id,
-        username=user_pred.username,
-        session_key=user_pred.session_key,
-        p1_exact=p1_exact,
-        p2_exact=p2_exact,
-        p3_exact=p3_exact,
-        podium_hits=podium_hits,
-        total_points=points,
-        scored_at=datetime.now(UTC).isoformat(),
-    )
-    db.merge(score)
-    db.commit()
-    return score
-
-
-def get_leaderboard(session_key: int | None, db: DBSession) -> list[LeaderboardEntry]:
-    """
-    Rank users by total points. Ties broken by earlier submission time (Rule 38).
-    Scores any unscored completed predictions on the fly.
-    """
-    # Auto-score any pending user predictions for completed sessions
-    unscored = (
-        db.query(UserPrediction)
-        .outerjoin(PredictionScore, UserPrediction.id == PredictionScore.prediction_id)
-        .filter(PredictionScore.prediction_id.is_(None))
-        .all()
-    )
-    for p in unscored:
-        score_and_store_prediction(p, db)
-
-    filter_clause = "WHERE s.session_key = :session_key" if session_key else ""
-    query = text(f"""
-        SELECT s.username,
-               SUM(s.total_points) AS total_points,
-               SUM(CASE WHEN s.p1_exact THEN 1 ELSE 0 END +
-                   CASE WHEN s.p2_exact THEN 1 ELSE 0 END +
-                   CASE WHEN s.p3_exact THEN 1 ELSE 0 END) AS exact_picks,
-               SUM(s.podium_hits) AS podium_hits,
-               MIN(u.submitted_at) AS submitted_at
-        FROM prediction_scores s
-        JOIN user_predictions u ON s.prediction_id = u.id
-        {filter_clause}
-        GROUP BY s.username
-        ORDER BY total_points DESC, submitted_at ASC
-    """)
-    params = {"session_key": session_key} if session_key else {}
-    rows = db.execute(query, params).fetchall()
-
-    entries = []
-    for rank, r in enumerate(rows, start=1):
-        entries.append(
-            LeaderboardEntry(
-                rank=rank,
-                username=str(r[0]),
-                total_points=int(r[1]),
-                exact_picks=int(r[2]),
-                podium_hits=int(r[3]),
-                submitted_at=str(r[4]),
-            )
-        )
-    return entries

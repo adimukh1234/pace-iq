@@ -4,7 +4,7 @@ import { ArrowLeft, Activity, Info, Cpu, ChevronRight } from "lucide-react";
 import { driversApi } from "../api/client";
 import type { DriverExplainResponse } from "../types";
 import { ContributionChart } from "../components/ContributionChart";
-import { LoadingState, ErrorState } from "../components/States";
+import { ErrorState } from "../components/States";
 
 export const DriverExplainerPage: React.FC = () => {
   const { sessionKey, driverNumber } = useParams<{ sessionKey: string; driverNumber: string }>();
@@ -39,7 +39,14 @@ export const DriverExplainerPage: React.FC = () => {
   }, [sessionKey, driverNumber]);
 
   if (loading) {
-    return <LoadingState message="Extracting tree attributions and telemetry contributions..." />;
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+        <div className="skeleton" style={{ height: "40px", width: "180px", borderRadius: "var(--radius-sm)" }} />
+        <div className="skeleton" style={{ height: "180px", width: "100%", borderRadius: "var(--radius-lg)" }} />
+        <div className="skeleton" style={{ height: "100px", width: "100%", borderRadius: "var(--radius-md)" }} />
+        <div className="skeleton" style={{ height: "260px", width: "100%", borderRadius: "var(--radius-md)" }} />
+      </div>
+    );
   }
 
   if (error || !data) {
@@ -62,9 +69,11 @@ export const DriverExplainerPage: React.FC = () => {
             fontSize: "var(--text-xs)",
             fontFamily: "var(--font-mono)",
             textDecoration: "none",
+            minHeight: "44px",
+            padding: "4px 8px",
           }}
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={16} />
           <span>BACK TO RACE PREDICTION</span>
         </Link>
       </div>

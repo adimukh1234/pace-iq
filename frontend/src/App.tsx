@@ -1,14 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
+import { MobileNavBar } from "./components/MobileNavBar";
 import { Footer } from "./components/Footer";
 import { VideoBackground } from "./components/VideoBackground";
 import { RacesPage } from "./pages/RacesPage";
 import { RaceDetailPage } from "./pages/RaceDetailPage";
 import { DriverExplainerPage } from "./pages/DriverExplainerPage";
 import { ReplayPage } from "./pages/ReplayPage";
-import { GamePage } from "./pages/GamePage";
-import { LeaderboardPage } from "./pages/LeaderboardPage";
-import { CardPage } from "./pages/CardPage";
 
 function App() {
   return (
@@ -22,6 +20,7 @@ function App() {
           backgroundColor: "transparent",
           color: "var(--color-text-primary)",
           position: "relative",
+          zIndex: 1,
         }}
       >
         <Navbar />
@@ -44,15 +43,17 @@ function App() {
               path="/races/:sessionKey/driver/:driverNumber"
               element={<DriverExplainerPage />}
             />
+            <Route
+              path="/races/:sessionKey/drivers/:driverNumber"
+              element={<DriverExplainerPage />}
+            />
             <Route path="/races/:sessionKey/replay" element={<ReplayPage />} />
-            <Route path="/game" element={<GamePage />} />
-            <Route path="/leaderboard" element={<LeaderboardPage />} />
-            <Route path="/card/:predictionId" element={<CardPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
 
         <Footer />
+        <MobileNavBar />
       </div>
     </BrowserRouter>
   );

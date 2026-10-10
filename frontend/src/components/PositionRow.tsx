@@ -46,16 +46,7 @@ export const PositionRow: React.FC<{
   return (
     <Link
       to={`/races/${sessionKey}/drivers/${row.driver_number}`}
-      style={{
-        display: "grid",
-        gridTemplateColumns: "48px 1fr 140px 80px 32px",
-        alignItems: "center",
-        backgroundColor: "var(--color-surface-1)",
-        borderBottom: "1px solid var(--color-surface-outline)",
-        padding: "var(--space-3) var(--space-4)",
-        textDecoration: "none",
-        transition: "background-color var(--duration-micro) ease",
-      }}
+      className="position-row-link"
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = "var(--color-surface-2)";
       }}
@@ -67,8 +58,10 @@ export const PositionRow: React.FC<{
       <div
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "1.25rem",
+          fontSize: "1.2rem",
           fontWeight: 700,
+          fontVariantNumeric: "tabular-nums",
+          letterSpacing: "0.02em",
           color:
             row.predicted_position <= 3
               ? "var(--color-accent-orange)"
@@ -79,17 +72,18 @@ export const PositionRow: React.FC<{
       </div>
 
       {/* Driver & Team */}
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", minWidth: 0 }}>
         <div
           style={{
             width: "4px",
             height: "28px",
             backgroundColor: row.team_colour || "var(--color-accent-red)",
             borderRadius: "2px",
+            flexShrink: 0,
           }}
         />
-        <div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)" }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)", flexWrap: "wrap" }}>
             <span
               style={{
                 fontFamily: "var(--font-data)",
@@ -100,18 +94,66 @@ export const PositionRow: React.FC<{
             >
               {row.name_acronym}
             </span>
-            <span style={{ fontSize: "var(--type-body-sm)", color: "var(--color-text-secondary)" }}>
+            <span
+              style={{
+                fontSize: "var(--type-body-sm)",
+                color: "var(--color-text-secondary)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {row.full_name}
             </span>
           </div>
-          <div style={{ fontSize: "var(--type-label)", color: "var(--color-text-muted)" }}>
+          <div
+            style={{
+              fontSize: "var(--type-label)",
+              color: "var(--color-text-muted)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
             {row.team_name}
+          </div>
+
+          {/* Mobile-Only Podium Probability Indicator */}
+          <div
+            className="position-row-prob-mobile"
+            style={{
+              alignItems: "center",
+              gap: "6px",
+              marginTop: "4px",
+              fontSize: "10px",
+              fontFamily: "var(--font-data)",
+              color: "var(--color-text-muted)",
+            }}
+          >
+            <span>Podium: {probPct}%</span>
+            <div
+              style={{
+                width: "48px",
+                height: "4px",
+                backgroundColor: "var(--color-surface-2)",
+                borderRadius: "var(--radius-pill)",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${probPct}%`,
+                  height: "100%",
+                  backgroundColor: probPct >= 50 ? "var(--color-accent-teal)" : "var(--color-accent-teal-dim)",
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Podium Probability Bar */}
-      <div>
+      {/* Desktop-Only Podium Probability Bar */}
+      <div className="position-row-prob-desktop">
         <div
           style={{
             display: "flex",
@@ -150,7 +192,7 @@ export const PositionRow: React.FC<{
       </div>
 
       {/* Actual Result & Delta (if available) */}
-      <div style={{ textAlign: "right" }}>
+      <div style={{ textAlign: "right", whiteSpace: "nowrap" }}>
         {actualRow ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px" }}>
             <span style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data-sm)", color: "var(--color-text-muted)" }}>

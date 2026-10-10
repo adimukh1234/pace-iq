@@ -146,7 +146,7 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
         WebkitBackdropFilter: "var(--glass-blur)",
         border: "1px solid var(--color-surface-outline)",
         borderRadius: "var(--radius-md)",
-        padding: "var(--space-5)",
+        padding: "clamp(var(--space-3), 3.5vw, var(--space-5))",
         textDecoration: "none",
         position: "relative",
         boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
@@ -205,6 +205,8 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
           fontWeight: 700,
           color: "var(--color-text-primary)",
           marginBottom: "var(--space-1)",
+          overflowWrap: "anywhere",
+          wordBreak: "break-word",
         }}
       >
         {race.meeting_name}
@@ -219,6 +221,7 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
           color: "var(--color-text-secondary)",
           fontSize: "var(--type-body-md)",
           marginBottom: "var(--space-4)",
+          flexWrap: "wrap",
         }}
       >
         <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
@@ -242,7 +245,7 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
             >
               Predicted Podium
             </div>
-            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
               {race.predicted_podium.map((p, idx) => (
                 <div
                   key={p.driver_number}
@@ -299,7 +302,7 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
             >
               <span>Actual Podium (Official)</span>
             </div>
-            <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
               {race.actual_podium.map((a, idx) => {
                 const isExactHit = race.predicted_podium?.[idx]?.driver_number === a.driver_number;
                 return (

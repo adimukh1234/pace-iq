@@ -6,18 +6,15 @@
 import type {
   DriverExplainResponse,
   DriverLapsResponse,
-  LeaderboardResponse,
-  PredictionSubmitRequest,
-  PredictionSubmitResponse,
   RaceDetailResponse,
   RaceListItem,
   RaceStintsResponse,
   SeasonSummary,
-  ShareCardResponse,
 } from "../types";
 
-const API_BASE_URL =
+const RAW_API_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+const API_BASE_URL = RAW_API_URL.replace(/\/+$/, "");
 
 export class ApiError extends Error {
   code: string;
@@ -104,24 +101,6 @@ export const api = {
       `/races/${sessionKey}/drivers/${driverNumber}/explain`
     );
   },
-
-  submitPrediction(
-    payload: PredictionSubmitRequest
-  ): Promise<PredictionSubmitResponse> {
-    return request<PredictionSubmitResponse>("/game/predictions", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  },
-
-  getLeaderboard(sessionKey?: number): Promise<LeaderboardResponse> {
-    const query = sessionKey ? `?session_key=${sessionKey}` : "";
-    return request<LeaderboardResponse>(`/game/leaderboard${query}`);
-  },
-
-  getShareCard(userPredictionId: number): Promise<ShareCardResponse> {
-    return request<ShareCardResponse>(`/game/cards/${userPredictionId}`);
-  },
 };
 
 export const racesApi = {
@@ -138,10 +117,4 @@ export const driversApi = {
   },
   getDriverExplain: (sessionKey: number, driverNumber: number) =>
     api.getDriverExplanation(sessionKey, driverNumber),
-};
-
-export const gameApi = {
-  submitPrediction: (payload: PredictionSubmitRequest) => api.submitPrediction(payload),
-  getLeaderboard: (sessionKey?: number) => api.getLeaderboard(sessionKey),
-  getShareCard: (userPredictionId: number) => api.getShareCard(userPredictionId),
 };
