@@ -209,6 +209,45 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreRaces }) => {
               <span>EXPLORE RACES</span>
               <ArrowRight size={16} />
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById("methodology");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "14px 22px",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                backdropFilter: "var(--glass-blur)",
+                WebkitBackdropFilter: "var(--glass-blur)",
+                color: "var(--color-text-secondary)",
+                fontFamily: "var(--font-heading)",
+                fontSize: "0.88rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                borderRadius: "var(--radius-sm)",
+                border: "1px solid var(--color-surface-outline)",
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(46, 230, 197, 0.12)";
+                e.currentTarget.style.borderColor = "var(--color-accent-teal)";
+                e.currentTarget.style.color = "#FFFFFF";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+                e.currentTarget.style.borderColor = "var(--color-surface-outline)";
+                e.currentTarget.style.color = "var(--color-text-secondary)";
+              }}
+            >
+              <span>ML METHODOLOGY</span>
+            </button>
           </div>
 
           {/* Key Metrics / Stat Counters Row */}

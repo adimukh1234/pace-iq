@@ -5,6 +5,7 @@ import type { RaceListItem, SeasonSummary } from "../types";
 import { RaceCard } from "../components/RaceCard";
 import { SkeletonCard, ErrorState, EmptyState } from "../components/States";
 import { HeroSection } from "../components/HeroSection";
+import { ModelMethodologySection } from "../components/ModelMethodologySection";
 
 const NextRaceHighlight = React.lazy(() =>
   import("../components/NextRaceHighlight").then((m) => ({
@@ -189,6 +190,9 @@ export const RacesPage: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Model Architecture & Methodology Section */}
+      <ModelMethodologySection />
     </div>
   );
 };
