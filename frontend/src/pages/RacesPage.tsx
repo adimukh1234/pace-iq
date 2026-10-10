@@ -5,7 +5,31 @@ import type { RaceListItem, SeasonSummary } from "../types";
 import { RaceCard } from "../components/RaceCard";
 import { SkeletonCard, ErrorState, EmptyState } from "../components/States";
 import { HeroSection } from "../components/HeroSection";
-import { NextRaceHighlight } from "../components/NextRaceHighlight";
+
+const NextRaceHighlight = React.lazy(() =>
+  import("../components/NextRaceHighlight").then((m) => ({
+    default: m.NextRaceHighlight,
+  }))
+);
+
+const HighlightSkeleton = () => (
+  <div
+    style={{
+      minHeight: "360px",
+      borderRadius: "var(--radius-lg)",
+      backgroundColor: "rgba(16, 18, 24, 0.6)",
+      border: "1px solid var(--color-surface-outline)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "var(--color-text-muted)",
+      fontFamily: "var(--font-mono)",
+      fontSize: "var(--text-xs)",
+    }}
+  >
+    LOADING UPCOMING SPOTLIGHT...
+  </div>
+);
 
 export const RacesPage: React.FC = () => {
   const [seasons, setSeasons] = useState<SeasonSummary[]>([]);
@@ -71,7 +95,9 @@ export const RacesPage: React.FC = () => {
       <HeroSection />
 
       {/* Featured Unrun Race Spotlight: Singapore GP 2026 Model Predictions */}
-      <NextRaceHighlight />
+      <React.Suspense fallback={<HighlightSkeleton />}>
+        <NextRaceHighlight />
+      </React.Suspense>
 
       {/* Season Picker Controls */}
       <div

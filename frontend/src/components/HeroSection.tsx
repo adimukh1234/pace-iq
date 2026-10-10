@@ -82,14 +82,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreRaces }) => {
 
       {/* Main Two-Column Content Grid */}
       <div
+        className="hero-grid"
         style={{
           position: "relative",
           zIndex: 1,
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-          gap: "var(--space-6)",
-          padding: "clamp(var(--space-4), 4vw, var(--space-8))",
-          alignItems: "center",
         }}
       >
         {/* Left Column: Brand, Value Proposition & Metrics */}
@@ -126,8 +122,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreRaces }) => {
               fontSize: "clamp(2.75rem, 5.5vw, 4.4rem)",
               fontWeight: 800,
               letterSpacing: "0.02em",
-              lineHeight: 1.02,
+              lineHeight: 1.05,
+              minHeight: "clamp(2.9rem, 5.8vw, 4.6rem)",
               margin: 0,
+              display: "block",
             }}
           >
             <span style={{ color: "#FFFFFF" }}>PACE</span>
@@ -316,6 +314,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreRaces }) => {
             alignItems: "center",
             width: "100%",
             maxWidth: "460px",
+            minHeight: "440px",
             margin: "0 auto",
             position: "relative",
           }}
@@ -325,6 +324,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreRaces }) => {
             style={{
               position: "relative",
               width: "100%",
+              minHeight: "330px",
+              boxSizing: "border-box",
+              contain: "layout style",
               backgroundColor: "rgba(10, 12, 17, 0.88)",
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",

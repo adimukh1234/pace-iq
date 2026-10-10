@@ -1,4 +1,4 @@
-import React from "react";
+const CURRENT_YEAR = new Date().getFullYear();
 
 export const Footer: React.FC = () => {
   return (
@@ -55,7 +55,7 @@ export const Footer: React.FC = () => {
         </p>
 
         <p style={{ color: "var(--color-surface-outline)" }}>
-          © {new Date().getFullYear()} PaceIQ · All predictions precomputed with LightGBM & SHAP
+          © {CURRENT_YEAR} PaceIQ · All predictions precomputed with LightGBM & SHAP
         </p>
       </div>
     </footer>

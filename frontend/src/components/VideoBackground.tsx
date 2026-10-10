@@ -92,20 +92,26 @@ export const VideoBackground: React.FC = () => {
       }}
     >
       {isMobileOrSlow ? (
-        <img
-          src="/back_poster.jpg"
-          alt=""
-          role="presentation"
-          loading="eager"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            objectPosition: "center",
-            filter: "brightness(0.72) contrast(1.12) saturate(1.22)",
-            transform: "scale(1.02)",
-          }}
-        />
+        <picture>
+          <source srcSet="/back_poster.webp" type="image/webp" />
+          <img
+            src="/back_poster.jpg"
+            alt=""
+            role="presentation"
+            loading="eager"
+            fetchPriority="high"
+            width={1920}
+            height={1080}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              filter: "brightness(0.72) contrast(1.12) saturate(1.22)",
+              transform: "scale(1.02)",
+            }}
+          />
+        </picture>
       ) : (
         <video
           ref={videoRef}
@@ -113,8 +119,10 @@ export const VideoBackground: React.FC = () => {
           loop
           muted
           playsInline
-          preload="auto"
-          poster="/back_poster.jpg"
+          preload="metadata"
+          poster="/back_poster.webp"
+          width={1920}
+          height={1080}
           style={{
             width: "100%",
             height: "100%",
