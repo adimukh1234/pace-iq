@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Activity, Users } from "lucide-react";
-import { racesApi, driversApi } from "../api/client";
+import { racesApi, api } from "../api/client";
 import type {
   RaceDetailResponse,
   RaceStintsResponse,
@@ -68,19 +68,17 @@ export const ReplayPage: React.FC = () => {
 
       setLapsLoading(true);
       try {
-        const results = await Promise.all(
-          needed.map((num: number) =>
-            driversApi
-              .getDriverLaps(sKey, num)
-              .then((resp: DriverLapsResponse) => ({ num, laps: resp.laps }))
-              .catch(() => ({ num, laps: [] }))
-          )
-        );
+        const results = await api
+          .getRaceLaps(sKey, needed)
+          .catch(() => []);
 
         setDriverLapsMap((prev) => {
           const next = { ...prev };
-          results.forEach(({ num, laps }: { num: number; laps: LapItem[] }) => {
-            next[num] = laps;
+          results.forEach((resp: DriverLapsResponse) => {
+            next[resp.driver_number] = resp.laps;
+          });
+          needed.forEach((num) => {
+            if (!next[num]) next[num] = [];
           });
           return next;
         });
@@ -179,15 +177,33 @@ export const ReplayPage: React.FC = () => {
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "6px",
+              gap: "8px",
               fontFamily: "var(--font-mono)",
               fontSize: "var(--text-xs)",
               color: "var(--color-accent-red)",
               marginBottom: "var(--space-2)",
+              flexWrap: "wrap",
             }}
           >
             <Activity size={14} />
             <span>SESSION REPLAY & LAP TELEMETRY</span>
+            {race.status === "upcoming" && (
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "2px 8px",
+                  borderRadius: "var(--radius-sm)",
+                  backgroundColor: "rgba(46, 230, 197, 0.15)",
+                  color: "var(--color-accent-teal)",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  letterSpacing: "0.5px",
+                }}
+              >
+                PROJECTED STRATEGY SIMULATION
+              </span>
+            )}
           </div>
 
           <h1
@@ -202,7 +218,7 @@ export const ReplayPage: React.FC = () => {
           </h1>
 
           <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontFamily: "var(--font-mono)" }}>
-            {race.circuit_short_name} • {race.year} • Replay analysis & tyre life
+            {race.circuit_short_name} • {race.year} • {race.status === "upcoming" ? "Projected pace & tyre degradation model" : "Replay analysis & tyre life"}
           </div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Flag, Activity } from "lucide-react";
+import { Flag } from "lucide-react";
+import { NavbarMusicPill } from "./NavbarMusicPill";
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -91,36 +92,9 @@ export const Navbar: React.FC = () => {
           </nav>
         </div>
 
-        {/* Live System Badge */}
+        {/* Music Player & Action Section */}
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "var(--space-2)",
-              backgroundColor: "var(--color-surface-1)",
-              border: "1px solid var(--color-surface-outline)",
-              borderRadius: "var(--radius-pill)",
-              padding: "var(--space-1) var(--space-3)",
-              color: "var(--color-text-secondary)",
-              fontSize: "var(--type-label)",
-              fontFamily: "var(--font-data)",
-            }}
-          >
-            <Activity size={14} color="var(--color-accent-teal)" />
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <span
-                style={{
-                  width: "6px",
-                  height: "6px",
-                  borderRadius: "50%",
-                  backgroundColor: "var(--color-accent-teal)",
-                  boxShadow: "0 0 6px var(--color-accent-teal)",
-                }}
-              />
-              TELEMETRY LIVE
-            </span>
-          </div>
+          <NavbarMusicPill />
         </div>
       </header>
     </>

@@ -81,6 +81,15 @@ def get_race_laps(
             },
         )
 
+    # Auto-generate strategy telemetry simulation if no records exist yet
+    has_laps = db.query(Lap).filter(Lap.session_key == session_key).first() is not None
+    if not has_laps:
+        try:
+            from backend.pipeline.telemetry_simulation import generate_race_simulation
+            generate_race_simulation(session_key, db)
+        except Exception:
+            pass
+
     results = []
     for d_num in driver_nums:
         lap_rows = (
@@ -111,6 +120,14 @@ def get_race_laps(
 @router.get("/races/{session_key}/stints", response_model=RaceStintsResponse)
 def get_race_stints(session_key: int, db: DBSession = Depends(get_db)):
     """Get stint ranges and tyre compounds for all drivers in a session."""
+    has_stints = db.query(Stint).filter(Stint.session_key == session_key).first() is not None
+    if not has_stints:
+        try:
+            from backend.pipeline.telemetry_simulation import generate_race_simulation
+            generate_race_simulation(session_key, db)
+        except Exception:
+            pass
+
     stint_rows = (
         db.query(Stint)
         .filter(Stint.session_key == session_key)

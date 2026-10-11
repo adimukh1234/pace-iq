@@ -6,6 +6,7 @@ import { RaceCard } from "../components/RaceCard";
 import { SkeletonCard, ErrorState, EmptyState } from "../components/States";
 import { HeroSection } from "../components/HeroSection";
 import { ModelMethodologySection } from "../components/ModelMethodologySection";
+import { F1SoundtrackSection } from "../components/F1SoundtrackSection";
 
 const NextRaceHighlight = React.lazy(() =>
   import("../components/NextRaceHighlight").then((m) => ({
@@ -190,6 +191,9 @@ export const RacesPage: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* F1 Movie Soundtrack & Racing Audio Lab */}
+      <F1SoundtrackSection />
 
       {/* Model Architecture & Methodology Section */}
       <ModelMethodologySection />

@@ -47,3 +47,26 @@ def test_races_endpoint_and_headshots():
             podium_driver = first_race["predicted_podium"][0]
             assert "headshot_url" in podium_driver
 
+
+def test_race_laps_and_stints():
+    """Verify /races/{session_key}/laps and stints return valid telemetry series."""
+    resp = client.get("/api/races/2026175/laps?drivers=44,63")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert isinstance(data, list)
+    assert len(data) == 2
+    for driver_data in data:
+        assert driver_data["driver_number"] in (44, 63)
+        assert len(driver_data["laps"]) > 0
+        first_lap = driver_data["laps"][0]
+        assert "lap_number" in first_lap
+        assert "lap_duration" in first_lap
+        assert first_lap["lap_duration"] > 50
+
+    stints_resp = client.get("/api/races/2026175/stints")
+    assert stints_resp.status_code == 200
+    stints_data = stints_resp.json()
+    assert "stints" in stints_data
+    assert len(stints_data["stints"]) > 0
+
+
