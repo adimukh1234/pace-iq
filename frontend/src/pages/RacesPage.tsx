@@ -53,7 +53,7 @@ export const RacesPage: React.FC = () => {
       } catch {
         if (!isCurrent) return;
         setSeasons([
-          { year: 2026, total_races: 4, completed_races: 4 },
+          { year: 2026, total_races: 23, completed_races: 17 },
           { year: 2025, total_races: 24, completed_races: 24 },
         ]);
       }
@@ -96,7 +96,7 @@ export const RacesPage: React.FC = () => {
       {/* High-Impact Formula 1 Hero Section */}
       <HeroSection />
 
-      {/* Featured Unrun Race Spotlight: Singapore GP 2026 Model Predictions */}
+      {/* Featured Upcoming Race Spotlight: United States GP 2026 Model Predictions */}
       <React.Suspense fallback={<HighlightSkeleton />}>
         <NextRaceHighlight />
       </React.Suspense>

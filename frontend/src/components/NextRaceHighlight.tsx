@@ -17,25 +17,26 @@ import {
 import { racesApi } from "../api/client";
 import type { RaceDetailResponse } from "../types";
 
-// Default preloaded prediction data for Singapore GP 2026 (session_key: 2026175)
+// Default preloaded prediction data for United States GP 2026 (session_key: 2026185)
 // Guarantees zero Cumulative Layout Shift (CLS) and instant loading
-const DEFAULT_SINGAPORE_2026 = {
-  session_key: 2026175,
-  meeting_name: "Singapore Grand Prix",
-  circuit_short_name: "Marina Bay",
-  country_name: "Singapore",
-  date_start: "2026-10-11T12:00:00Z",
+const DEFAULT_UNITED_STATES_2026 = {
+  session_key: 2026185,
+  meeting_name: "United States Grand Prix",
+  circuit_short_name: "Austin",
+  country_name: "USA",
+  date_start: "2026-10-25T20:00:00Z",
   status: "upcoming" as const,
   model_version: "paceiq_v1",
   predicted: [
     {
-      driver_number: 44,
-      full_name: "Lewis Hamilton",
-      name_acronym: "HAM",
-      team_name: "Ferrari",
-      team_colour: "#E80020",
+      driver_number: 12,
+      full_name: "Andrea Kimi Antonelli",
+      name_acronym: "ANT",
+      team_name: "Mercedes",
+      team_colour: "#27F4D2",
       predicted_position: 1,
-      podium_probability: 0.5,
+      podium_probability: 0.6,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/1col/image.png",
     },
     {
       driver_number: 63,
@@ -44,7 +45,18 @@ const DEFAULT_SINGAPORE_2026 = {
       team_name: "Mercedes",
       team_colour: "#27F4D2",
       predicted_position: 2,
-      podium_probability: 0.6,
+      podium_probability: 0.2759,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png",
+    },
+    {
+      driver_number: 44,
+      full_name: "Lewis Hamilton",
+      name_acronym: "HAM",
+      team_name: "Ferrari",
+      team_colour: "#E80020",
+      predicted_position: 3,
+      podium_probability: 0.2759,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png",
     },
     {
       driver_number: 3,
@@ -52,17 +64,19 @@ const DEFAULT_SINGAPORE_2026 = {
       name_acronym: "VER",
       team_name: "Red Bull",
       team_colour: "#3671C6",
-      predicted_position: 3,
-      podium_probability: 0.6,
+      predicted_position: 4,
+      podium_probability: 0.7,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png",
     },
     {
-      driver_number: 12,
-      full_name: "Andrea Kimi Antonelli",
-      name_acronym: "ANT",
-      team_name: "Mercedes",
-      team_colour: "#27F4D2",
-      predicted_position: 4,
-      podium_probability: 0.6,
+      driver_number: 81,
+      full_name: "Oscar Piastri",
+      name_acronym: "PIA",
+      team_name: "McLaren",
+      team_colour: "#FF8000",
+      predicted_position: 5,
+      podium_probability: 0.2105,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png",
     },
     {
       driver_number: 1,
@@ -70,17 +84,9 @@ const DEFAULT_SINGAPORE_2026 = {
       name_acronym: "NOR",
       team_name: "McLaren",
       team_colour: "#FF8000",
-      predicted_position: 5,
+      predicted_position: 6,
       podium_probability: 0.2105,
-    },
-    {
-      driver_number: 16,
-      full_name: "Charles Leclerc",
-      name_acronym: "LEC",
-      team_name: "Ferrari",
-      team_colour: "#E80020",
-      predicted_position: 8,
-      podium_probability: 0.3684,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/1col/image.png",
     },
   ],
 };
@@ -91,9 +97,9 @@ export const NextRaceHighlight: React.FC = () => {
 
   useEffect(() => {
     let isCurrent = true;
-    async function fetchSingapore() {
+    async function fetchUpcoming() {
       try {
-        const data = await racesApi.getRace(2026175);
+        const data = await racesApi.getRace(2026185);
         if (isCurrent && data) {
           setRaceData(data);
         }
@@ -101,16 +107,17 @@ export const NextRaceHighlight: React.FC = () => {
         // Silently keep default preloaded state to prevent broken layout
       }
     }
-    fetchSingapore();
+    fetchUpcoming();
     return () => {
       isCurrent = false;
     };
   }, []);
 
-  const predictedDrivers = raceData?.predicted || DEFAULT_SINGAPORE_2026.predicted;
-  const p1 = predictedDrivers.find((d) => d.predicted_position === 1) || DEFAULT_SINGAPORE_2026.predicted[0];
-  const p2 = predictedDrivers.find((d) => d.predicted_position === 2) || DEFAULT_SINGAPORE_2026.predicted[1];
-  const p3 = predictedDrivers.find((d) => d.predicted_position === 3) || DEFAULT_SINGAPORE_2026.predicted[2];
+  const activeSessionKey = raceData?.session_key || DEFAULT_UNITED_STATES_2026.session_key;
+  const predictedDrivers = raceData?.predicted || DEFAULT_UNITED_STATES_2026.predicted;
+  const p1 = predictedDrivers.find((d) => d.predicted_position === 1) || DEFAULT_UNITED_STATES_2026.predicted[0];
+  const p2 = predictedDrivers.find((d) => d.predicted_position === 2) || DEFAULT_UNITED_STATES_2026.predicted[1];
+  const p3 = predictedDrivers.find((d) => d.predicted_position === 3) || DEFAULT_UNITED_STATES_2026.predicted[2];
 
   // Top contenders by probability or predicted rank
   const topContenders = predictedDrivers.slice(0, 6);
@@ -233,11 +240,11 @@ export const NextRaceHighlight: React.FC = () => {
         >
           <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
             <Calendar size={13} color="var(--color-accent-teal)" />
-            OCT 11, 2026
+            OCT 25, 2026
           </span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
             <Clock size={13} color="var(--color-accent-teal)" />
-            NIGHT RACE • 12:00 UTC
+            TODAY • 20:00 UTC
           </span>
         </div>
       </div>
@@ -269,7 +276,7 @@ export const NextRaceHighlight: React.FC = () => {
               }}
             >
               <MapPin size={14} />
-              MARINA BAY STREET CIRCUIT, SINGAPORE
+              CIRCUIT OF THE AMERICAS, AUSTIN, TEXAS
             </div>
             <h2
               style={{
@@ -282,7 +289,7 @@ export const NextRaceHighlight: React.FC = () => {
                 marginBottom: "8px",
               }}
             >
-              Singapore Grand Prix 2026
+              United States Grand Prix 2026
             </h2>
             <p
               style={{
@@ -292,8 +299,8 @@ export const NextRaceHighlight: React.FC = () => {
                 maxWidth: "680px",
               }}
             >
-              This race has not taken place in the real world yet. Below is our LightGBM GBDT predictive engine's active
-              simulation—factoring in Marina Bay's 19 technical turns, high humidity, tyre thermal degradation, and qualifying deltas.
+              Scheduled for today, October 25, 2026. Below is our LightGBM GBDT predictive engine's active
+              simulation—factoring in COTA's 20 demanding corners, high-speed Esses sequence, heavy tyre wear, and qualifying pace deltas.
             </p>
           </div>
 
@@ -314,7 +321,7 @@ export const NextRaceHighlight: React.FC = () => {
                 CIRCUIT LENGTH
               </div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 700, color: "#FFF" }}>
-                4.940 km
+                5.513 km
               </div>
             </div>
             <div>
@@ -322,15 +329,15 @@ export const NextRaceHighlight: React.FC = () => {
                 TOTAL LAPS
               </div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 700, color: "#FFF" }}>
-                62 Laps
+                56 Laps
               </div>
             </div>
             <div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--color-text-muted)" }}>
-                SAFETY CAR CHANCE
+                ELEVATION DELTA
               </div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 700, color: "#E10600" }}>
-                100% Hist.
+                41m (Turn 1)
               </div>
             </div>
             <div>
@@ -892,7 +899,7 @@ export const NextRaceHighlight: React.FC = () => {
                   border: "1px solid rgba(46, 230, 197, 0.3)",
                 }}
               >
-                HAM P1 expected finish score: 4.09
+                {p1.name_acronym} P1 expected finish score: 4.12
               </div>
             </div>
 
@@ -902,7 +909,7 @@ export const NextRaceHighlight: React.FC = () => {
                 return (
                   <Link
                     key={driver.driver_number}
-                    to={`/races/2026175/drivers/${driver.driver_number}`}
+                    to={`/races/${activeSessionKey}/drivers/${driver.driver_number}`}
                     style={{
                       display: "grid",
                       gridTemplateColumns: "clamp(60px, 15vw, 90px) 1fr clamp(44px, 10vw, 60px) 24px",
@@ -1063,14 +1070,14 @@ export const NextRaceHighlight: React.FC = () => {
                 }}
               >
                 <Flame size={16} />
-                SAFETY CAR OVERCUT WINDOW
+                COTA SECTOR 1 ESSES G-FORCE LOAD
               </div>
               <h4 style={{ color: "#FFF", fontSize: "1rem", fontWeight: 700, marginBottom: "6px" }}>
-                100% Historical Safety Car Probability
+                High-Speed Lateral Tyre Stress
               </h4>
               <p style={{ color: "var(--color-text-secondary)", fontSize: "0.85rem", lineHeight: 1.55 }}>
-                Every historical Singapore GP has deployed the Safety Car. The model rewards qualifying in the top 4
-                rows to mitigate mid-pack pit entry congestion during Virtual or full Safety Car periods.
+                COTA's Turns 3–6 sequence puts immense lateral load on the front tyres. The model rewards aerodynamic
+                downforce and platform stability, heavily favoring the Mercedes W17 package.
               </p>
             </div>
 
@@ -1087,7 +1094,7 @@ export const NextRaceHighlight: React.FC = () => {
                   display: "flex",
                   alignItems: "center",
                   gap: "8px",
-                  color: "#E80020",
+                  color: "#27F4D2",
                   marginBottom: "8px",
                   fontFamily: "var(--font-mono)",
                   fontSize: "12px",
@@ -1095,14 +1102,14 @@ export const NextRaceHighlight: React.FC = () => {
                 }}
               >
                 <Zap size={16} />
-                FERRARI VS MERCEDES APEX PACE
+                MERCEDES FRONT ROW PROJECTION
               </div>
               <h4 style={{ color: "#FFF", fontSize: "1rem", fontWeight: 700, marginBottom: "6px" }}>
-                Hamilton P1 Street Circuit Index
+                Antonelli P1 Aerodynamic Efficiency Index
               </h4>
               <p style={{ color: "var(--color-text-secondary)", fontSize: "0.85rem", lineHeight: 1.55 }}>
-                Hamilton's modeled qualifying index (+0.18s advantage in slow 90° corners) puts Ferrari ahead of
-                Mercedes and Red Bull in single-lap simulation, making him the prime candidate for victory.
+                Antonelli's qualifying pace and sector split data forecast a narrow edge over teammate George Russell,
+                establishing Mercedes as the front-running package for today's Grand Prix.
               </p>
             </div>
           </div>
@@ -1157,7 +1164,7 @@ export const NextRaceHighlight: React.FC = () => {
           </div>
 
           <Link
-            to="/races/2026175"
+            to={`/races/${activeSessionKey}`}
             style={{
               display: "inline-flex",
               alignItems: "center",

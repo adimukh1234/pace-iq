@@ -1,7 +1,6 @@
 """
 Dedicated 2026 Season Ingestion Script.
-Cleans legacy mock 2026 entries and ingests all 23 official 2026 rounds from Jolpica
-(16 completed + 7 upcoming).
+Ingests all 23 official 2026 rounds from Jolpica (17 completed + 6 upcoming as of Oct 25, 2026).
 """
 
 import sqlite3
@@ -23,13 +22,11 @@ def run():
     c = conn.cursor()
 
     # Clean old mock 2026 entries
-    for t in ["predictions", "features", "session_results", "starting_grids", "drivers", "laps", "stints", "weather"]:
+    for t in ["session_results", "starting_grids", "drivers"]:
         c.execute(f"DELETE FROM {t} WHERE session_key LIKE '2026%'")
-    c.execute("DELETE FROM sessions WHERE year=2026")
-    c.execute("DELETE FROM meetings WHERE year=2026")
     conn.commit()
     conn.close()
-    print("Cleaned legacy 2026 records.")
+    print("Cleaned 2026 session results, grids, and drivers.")
 
     # Ingest full 2026 season from Jolpica
     db = SessionLocal()
@@ -41,3 +38,4 @@ def run():
 
 if __name__ == "__main__":
     run()
+
