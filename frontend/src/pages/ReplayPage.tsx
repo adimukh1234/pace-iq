@@ -218,7 +218,7 @@ export const ReplayPage: React.FC = () => {
           </h1>
 
           <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontFamily: "var(--font-mono)" }}>
-            {race.circuit_short_name} • {race.year} • {race.status === "upcoming" ? "Projected pace & tyre degradation model" : "Replay analysis & tyre life"}
+            {race.circuit_short_name} • {race.date_start ? new Date(race.date_start).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }) : race.year} • {race.status === "upcoming" ? "Projected pace & tyre degradation model" : "Replay analysis & tyre life"}
           </div>
         </div>
       </section>

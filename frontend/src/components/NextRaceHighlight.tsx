@@ -127,6 +127,26 @@ export const NextRaceHighlight: React.FC = () => {
   const p2 = predictedDrivers.find((d) => d.predicted_position === 2) || DEFAULT_LAS_VEGAS_2026.predicted[1];
   const p3 = predictedDrivers.find((d) => d.predicted_position === 3) || DEFAULT_LAS_VEGAS_2026.predicted[2];
 
+  // Dynamic race date and time
+  const meetingDateObj = new Date(currentMeeting.date_start);
+  const formattedMeetingDate = !isNaN(meetingDateObj.getTime())
+    ? meetingDateObj.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      }).toUpperCase()
+    : "NOV 22, 2026";
+
+  const formattedMeetingTime = !isNaN(meetingDateObj.getTime())
+    ? `${meetingDateObj.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "UTC",
+      })} UTC`
+    : "04:00 UTC";
+
   // Top contenders by probability or predicted rank
   const topContenders = predictedDrivers.slice(0, 6);
 
@@ -248,11 +268,11 @@ export const NextRaceHighlight: React.FC = () => {
         >
           <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
             <Calendar size={13} color="var(--color-accent-teal)" />
-            OCT 25, 2026
+            {formattedMeetingDate}
           </span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
             <Clock size={13} color="var(--color-accent-teal)" />
-            TODAY • 20:00 UTC
+            {formattedMeetingTime}
           </span>
         </div>
       </div>

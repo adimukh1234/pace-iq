@@ -50,7 +50,10 @@ default_origins = [
     "https://paceiq.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 if raw_cors.strip():
     custom_origins = [o.strip() for o in raw_cors.split(",") if o.strip()]

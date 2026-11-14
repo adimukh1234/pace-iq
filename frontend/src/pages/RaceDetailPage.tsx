@@ -174,7 +174,22 @@ export const RaceDetailPage: React.FC = () => {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               <Calendar size={14} color="var(--color-text-muted)" />
-              <span>{race.date_start ? new Date(race.date_start).toLocaleDateString() : race.year}</span>
+              <span>
+                {race.date_start
+                  ? `${new Date(race.date_start).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      timeZone: "UTC",
+                    })} • ${new Date(race.date_start).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                      timeZone: "UTC",
+                    })} UTC`
+                  : race.year}
+              </span>
             </div>
           </div>
         </div>

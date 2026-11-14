@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Trophy, Flame, Sparkles, XCircle } from "lucide-react";
+import { MapPin, Trophy, Flame, Sparkles, XCircle, Calendar } from "lucide-react";
 import type { RaceListItem } from "../types";
 import { DriverAvatar } from "./DriverAvatar";
 
@@ -213,12 +213,12 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
         {race.meeting_name}
       </h3>
 
-      {/* Subtitle: Circuit Location Only */}
+      {/* Subtitle: Circuit Location and Date */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "var(--space-2)",
+          gap: "var(--space-3)",
           color: "var(--color-text-secondary)",
           fontSize: "var(--type-body-md)",
           marginBottom: "var(--space-4)",
@@ -229,6 +229,26 @@ export const RaceCard: React.FC<{ race: RaceListItem; roundIndex?: number }> = (
           <MapPin size={14} color="var(--color-accent-teal)" />
           {race.circuit_short_name || race.country_name}
         </span>
+        {race.date_start && (
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              color: "var(--color-text-muted)",
+              fontSize: "var(--type-data-sm)",
+              fontFamily: "var(--font-mono)",
+            }}
+          >
+            <Calendar size={13} color="var(--color-text-muted)" />
+            {new Date(race.date_start).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              timeZone: "UTC",
+            })}
+          </span>
+        )}
       </div>
 
       {/* Predicted & Actual Podiums */}
