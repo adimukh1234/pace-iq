@@ -45,18 +45,23 @@ app = FastAPI(
 
 # CORS configuration (Rule 32 & TECH_SPEC §12)
 raw_cors = os.getenv("CORS_ALLOWED_ORIGINS", "")
+default_origins = [
+    "https://pace-iq-one.vercel.app",
+    "https://paceiq.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+]
 if raw_cors.strip():
-    allowed_origins = [o.strip() for o in raw_cors.split(",") if o.strip()]
+    custom_origins = [o.strip() for o in raw_cors.split(",") if o.strip()]
+    allowed_origins = list(dict.fromkeys(default_origins + custom_origins))
 else:
-    allowed_origins = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-    ]
+    allowed_origins = default_origins
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
