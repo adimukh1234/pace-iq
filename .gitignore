@@ -27,6 +27,11 @@ frontend/.vite/
 dist/
 node_modules/
 
+# Archives & Bundles
+*.zip
+*.tar.gz
+*.rar
+
 # Worktrees & Editor
 .worktrees/
 worktrees/

@@ -1,20 +1,20 @@
 """
 Update 2026 Season results from Jolpica API.
-Fetches the latest completed races (including Round 17 Singapore GP)
+Fetches the latest completed races (including Rounds 18-20: USA, Mexico, Brazil)
 and updates the database tables (session_results, starting_grids, drivers).
 """
 
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from backend.app.config import DATA_DIR
-from backend.app.db import SessionLocal, SessionResult, Driver, StartingGrid, Meeting, Session
+from backend.app.db import Driver, Session, SessionLocal, SessionResult
 from backend.pipeline.jolpica_client import JolpicaClient
+
 
 def update_2026():
     client = JolpicaClient()
@@ -53,13 +53,14 @@ def update_2026():
     completed_q = db.query(Session.session_key).join(SessionResult, SessionResult.session_key == Session.session_key).filter(Session.year == year, Session.session_name == "Race").distinct().all()
     print(f"Total completed 2026 races in database: {len(completed_q)}")
 
-    # Check Singapore GP results
-    singapore_results = db.query(SessionResult).filter(SessionResult.session_key == 2026175).order_by(SessionResult.position).all()
-    print(f"Singapore GP (2026175) results count: {len(singapore_results)}")
-    for res in singapore_results[:5]:
-        driver = db.query(Driver).filter(Driver.session_key == 2026175, Driver.driver_number == res.driver_number).first()
-        name = driver.full_name if driver else f"Driver #{res.driver_number}"
-        print(f"  P{res.position}: {name} ({res.points} pts)")
+    # Check recent races
+    for s_key, label in [(2026185, "USA GP"), (2026195, "Mexico City GP"), (2026205, "São Paulo GP")]:
+        results = db.query(SessionResult).filter(SessionResult.session_key == s_key).order_by(SessionResult.position).all()
+        print(f"{label} ({s_key}) results count: {len(results)}")
+        for res in results[:3]:
+            driver = db.query(Driver).filter(Driver.session_key == s_key, Driver.driver_number == res.driver_number).first()
+            name = driver.full_name if driver else f"Driver #{res.driver_number}"
+            print(f"  P{res.position}: {name} ({res.points} pts)")
 
     db.close()
 

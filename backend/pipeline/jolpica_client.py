@@ -300,7 +300,6 @@ class JolpicaClient:
 
             # 4. Process Qualifying times for pole gap calculation
             quali_results = quali_race.get("QualifyingResults", []) if quali_race else []
-            pole_time_s: float | None = None
             best_times: dict[int, float] = {}
 
             for q_res in quali_results:
@@ -315,8 +314,6 @@ class JolpicaClient:
                 best_s = q3_s or q2_s or q1_s
                 if best_s:
                     best_times[d_num] = best_s
-                    if q_res.get("position") == "1":
-                        pole_time_s = best_s
 
             # 5. Ingest Drivers, Grids, and Results
             race_results = res_race.get("Results", []) if res_race else []

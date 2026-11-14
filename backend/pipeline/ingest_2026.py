@@ -1,11 +1,11 @@
 """
 Dedicated 2026 Season Ingestion Script.
-Ingests all 23 official 2026 rounds from Jolpica (17 completed + 6 upcoming as of Oct 25, 2026).
+Ingests all 23 official 2026 rounds from Jolpica (completed + upcoming).
 """
 
 import sqlite3
-from pathlib import Path
 import sys
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:

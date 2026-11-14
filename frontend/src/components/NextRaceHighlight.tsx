@@ -17,26 +17,36 @@ import {
 import { racesApi } from "../api/client";
 import type { RaceDetailResponse } from "../types";
 
-// Default preloaded prediction data for United States GP 2026 (session_key: 2026185)
+// Default preloaded prediction data for Las Vegas GP 2026 (session_key: 2026215)
 // Guarantees zero Cumulative Layout Shift (CLS) and instant loading
-const DEFAULT_UNITED_STATES_2026 = {
-  session_key: 2026185,
-  meeting_name: "United States Grand Prix",
-  circuit_short_name: "Austin",
+const DEFAULT_LAS_VEGAS_2026 = {
+  session_key: 2026215,
+  meeting_name: "Las Vegas Grand Prix",
+  circuit_short_name: "Las Vegas",
   country_name: "USA",
-  date_start: "2026-10-25T20:00:00Z",
+  date_start: "2026-11-22T04:00:00Z",
   status: "upcoming" as const,
   model_version: "paceiq_v1",
   predicted: [
     {
-      driver_number: 12,
-      full_name: "Andrea Kimi Antonelli",
-      name_acronym: "ANT",
-      team_name: "Mercedes",
-      team_colour: "#27F4D2",
+      driver_number: 44,
+      full_name: "Lewis Hamilton",
+      name_acronym: "HAM",
+      team_name: "Ferrari",
+      team_colour: "#E80020",
       predicted_position: 1,
-      podium_probability: 0.6,
-      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/1col/image.png",
+      podium_probability: 0.5,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png",
+    },
+    {
+      driver_number: 6,
+      full_name: "Isack Hadjar",
+      name_acronym: "HAD",
+      team_name: "Red Bull",
+      team_colour: "#3671C6",
+      predicted_position: 2,
+      podium_probability: 0.0769,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/I/ISAHAD01_Isack_Hadjar/isahad01.png.transform/1col/image.png",
     },
     {
       driver_number: 63,
@@ -44,19 +54,9 @@ const DEFAULT_UNITED_STATES_2026 = {
       name_acronym: "RUS",
       team_name: "Mercedes",
       team_colour: "#27F4D2",
-      predicted_position: 2,
-      podium_probability: 0.2759,
-      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png",
-    },
-    {
-      driver_number: 44,
-      full_name: "Lewis Hamilton",
-      name_acronym: "HAM",
-      team_name: "Ferrari",
-      team_colour: "#E80020",
       predicted_position: 3,
-      podium_probability: 0.2759,
-      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png",
+      podium_probability: 0.1034,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png",
     },
     {
       driver_number: 3,
@@ -65,8 +65,18 @@ const DEFAULT_UNITED_STATES_2026 = {
       team_name: "Red Bull",
       team_colour: "#3671C6",
       predicted_position: 4,
-      podium_probability: 0.7,
+      podium_probability: 0.2759,
       headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png",
+    },
+    {
+      driver_number: 12,
+      full_name: "Andrea Kimi Antonelli",
+      name_acronym: "ANT",
+      team_name: "Mercedes",
+      team_colour: "#27F4D2",
+      predicted_position: 5,
+      podium_probability: 0.3684,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/1col/image.png",
     },
     {
       driver_number: 81,
@@ -74,19 +84,9 @@ const DEFAULT_UNITED_STATES_2026 = {
       name_acronym: "PIA",
       team_name: "McLaren",
       team_colour: "#FF8000",
-      predicted_position: 5,
-      podium_probability: 0.2105,
-      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png",
-    },
-    {
-      driver_number: 1,
-      full_name: "Lando Norris",
-      name_acronym: "NOR",
-      team_name: "McLaren",
-      team_colour: "#FF8000",
       predicted_position: 6,
-      podium_probability: 0.2105,
-      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/1col/image.png",
+      podium_probability: 0.0282,
+      headshot_url: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png",
     },
   ],
 };
@@ -99,7 +99,14 @@ export const NextRaceHighlight: React.FC = () => {
     let isCurrent = true;
     async function fetchUpcoming() {
       try {
-        const data = await racesApi.getRace(2026185);
+        const allRaces = await racesApi.getRaces(2026);
+        const upcomingRace =
+          allRaces.find((r) => r.status === "upcoming") ||
+          allRaces.find((r) => new Date(r.date_start) >= new Date());
+        const targetSessionKey = upcomingRace
+          ? upcomingRace.session_key
+          : DEFAULT_LAS_VEGAS_2026.session_key;
+        const data = await racesApi.getRace(targetSessionKey);
         if (isCurrent && data) {
           setRaceData(data);
         }
@@ -113,11 +120,12 @@ export const NextRaceHighlight: React.FC = () => {
     };
   }, []);
 
-  const activeSessionKey = raceData?.session_key || DEFAULT_UNITED_STATES_2026.session_key;
-  const predictedDrivers = raceData?.predicted || DEFAULT_UNITED_STATES_2026.predicted;
-  const p1 = predictedDrivers.find((d) => d.predicted_position === 1) || DEFAULT_UNITED_STATES_2026.predicted[0];
-  const p2 = predictedDrivers.find((d) => d.predicted_position === 2) || DEFAULT_UNITED_STATES_2026.predicted[1];
-  const p3 = predictedDrivers.find((d) => d.predicted_position === 3) || DEFAULT_UNITED_STATES_2026.predicted[2];
+  const currentMeeting = raceData || DEFAULT_LAS_VEGAS_2026;
+  const activeSessionKey = currentMeeting.session_key;
+  const predictedDrivers = currentMeeting.predicted;
+  const p1 = predictedDrivers.find((d) => d.predicted_position === 1) || DEFAULT_LAS_VEGAS_2026.predicted[0];
+  const p2 = predictedDrivers.find((d) => d.predicted_position === 2) || DEFAULT_LAS_VEGAS_2026.predicted[1];
+  const p3 = predictedDrivers.find((d) => d.predicted_position === 3) || DEFAULT_LAS_VEGAS_2026.predicted[2];
 
   // Top contenders by probability or predicted rank
   const topContenders = predictedDrivers.slice(0, 6);
@@ -276,7 +284,7 @@ export const NextRaceHighlight: React.FC = () => {
               }}
             >
               <MapPin size={14} />
-              CIRCUIT OF THE AMERICAS, AUSTIN, TEXAS
+              {currentMeeting.circuit_short_name.toUpperCase()}, {currentMeeting.country_name.toUpperCase()}
             </div>
             <h2
               style={{
@@ -289,7 +297,7 @@ export const NextRaceHighlight: React.FC = () => {
                 marginBottom: "8px",
               }}
             >
-              United States Grand Prix 2026
+              {currentMeeting.meeting_name} 2026
             </h2>
             <p
               style={{
@@ -299,8 +307,8 @@ export const NextRaceHighlight: React.FC = () => {
                 maxWidth: "680px",
               }}
             >
-              Scheduled for today, October 25, 2026. Below is our LightGBM GBDT predictive engine's active
-              simulation—factoring in COTA's 20 demanding corners, high-speed Esses sequence, heavy tyre wear, and qualifying pace deltas.
+              Upcoming Grand Prix spotlight. Below is our LightGBM GBDT predictive engine's active
+              simulation—factoring in street circuit night race grip, long straightaways on the Strip, and pre-race telemetry deltas.
             </p>
           </div>
 
@@ -321,7 +329,7 @@ export const NextRaceHighlight: React.FC = () => {
                 CIRCUIT LENGTH
               </div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 700, color: "#FFF" }}>
-                5.513 km
+                6.201 km
               </div>
             </div>
             <div>
@@ -329,15 +337,15 @@ export const NextRaceHighlight: React.FC = () => {
                 TOTAL LAPS
               </div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 700, color: "#FFF" }}>
-                56 Laps
+                50 Laps
               </div>
             </div>
             <div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--color-text-muted)" }}>
-                ELEVATION DELTA
+                CIRCUIT TYPE
               </div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 700, color: "#E10600" }}>
-                41m (Turn 1)
+                Street (Strip)
               </div>
             </div>
             <div>
@@ -1070,14 +1078,14 @@ export const NextRaceHighlight: React.FC = () => {
                 }}
               >
                 <Flame size={16} />
-                COTA SECTOR 1 ESSES G-FORCE LOAD
+                LAS VEGAS STRIP MAXIMUM VELOCITY
               </div>
               <h4 style={{ color: "#FFF", fontSize: "1rem", fontWeight: 700, marginBottom: "6px" }}>
-                High-Speed Lateral Tyre Stress
+                Straight-Line Drag & Braking Stability
               </h4>
               <p style={{ color: "var(--color-text-secondary)", fontSize: "0.85rem", lineHeight: 1.55 }}>
-                COTA's Turns 3–6 sequence puts immense lateral load on the front tyres. The model rewards aerodynamic
-                downforce and platform stability, heavily favoring the Mercedes W17 package.
+                The 1.9km flat-out blast down the Las Vegas Strip demands peak power unit deployment and low aerodynamic
+                drag, heavily weighting straight-line top speed into Turn 14.
               </p>
             </div>
 
@@ -1102,14 +1110,14 @@ export const NextRaceHighlight: React.FC = () => {
                 }}
               >
                 <Zap size={16} />
-                MERCEDES FRONT ROW PROJECTION
+                DESERT NIGHT SURFACE TEMPERATURES
               </div>
               <h4 style={{ color: "#FFF", fontSize: "1rem", fontWeight: 700, marginBottom: "6px" }}>
-                Antonelli P1 Aerodynamic Efficiency Index
+                Front Tyre Warmup & Graining Management
               </h4>
               <p style={{ color: "var(--color-text-secondary)", fontSize: "0.85rem", lineHeight: 1.55 }}>
-                Antonelli's qualifying pace and sector split data forecast a narrow edge over teammate George Russell,
-                establishing Mercedes as the front-running package for today's Grand Prix.
+                Cool night track temperatures test mechanical front-axle grip and induce tyre graining risk, favoring cars
+                with superior low-speed braking balance and mechanical traction.
               </p>
             </div>
           </div>

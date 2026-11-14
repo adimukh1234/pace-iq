@@ -4,6 +4,7 @@ Provides REST API endpoints for races, predictions, and explanations.
 Complies with TECH_SPEC.md §8 and IMPLEMENTATION_RULES.md (Rules 29-33).
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -43,14 +44,19 @@ app = FastAPI(
 )
 
 # CORS configuration (Rule 32 & TECH_SPEC §12)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+raw_cors = os.getenv("CORS_ALLOWED_ORIGINS", "")
+if raw_cors.strip():
+    allowed_origins = [o.strip() for o in raw_cors.split(",") if o.strip()]
+else:
+    allowed_origins = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
-        "*",  # Local development flexibility
-    ],
+    ]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -21,7 +21,10 @@ MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Database
 DB_PATH = Path(os.getenv("PACEIQ_DB_PATH", str(DATA_DIR / "paceiq.db")))
-DATABASE_URL = f"sqlite:///{DB_PATH}"
+_RAW_DB_URL = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
+if _RAW_DB_URL.startswith("postgres://"):
+    _RAW_DB_URL = _RAW_DB_URL.replace("postgres://", "postgresql://", 1)
+DATABASE_URL = _RAW_DB_URL
 
 # OpenF1 Settings
 OPENF1_BASE_URL = "https://api.openf1.org/v1"
