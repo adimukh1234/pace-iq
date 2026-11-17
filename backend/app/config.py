@@ -24,7 +24,21 @@ for d in (RAW_DATA_DIR, LOGS_DIR, MODELS_DIR):
 
 # Database: In serverless environments (e.g. Vercel / AWS Lambda), the code directory is
 # read-only. We copy paceiq.db to /tmp so SQLite can open and query it with shared locks.
-SOURCE_DB_PATH = Path(os.getenv("PACEIQ_DB_PATH", str(DATA_DIR / "paceiq.db")))
+potential_db_paths = [
+    Path(os.getenv("PACEIQ_DB_PATH", "")) if os.getenv("PACEIQ_DB_PATH") else None,
+    DATA_DIR / "paceiq.db",
+    PROJECT_ROOT / "backend" / "data" / "paceiq.db",
+    Path("/var/task/backend/data/paceiq.db"),
+]
+
+SOURCE_DB_PATH = None
+for p in potential_db_paths:
+    if p and p.exists():
+        SOURCE_DB_PATH = p
+        break
+
+if SOURCE_DB_PATH is None:
+    SOURCE_DB_PATH = DATA_DIR / "paceiq.db"
 
 if (os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME")) and SOURCE_DB_PATH.exists():
     TMP_DB_PATH = Path("/tmp/paceiq.db")
