@@ -25,7 +25,10 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 from backend.app.config import DATABASE_URL, DB_PATH
 
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+try:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 engine = create_engine(
     DATABASE_URL,
@@ -230,7 +233,10 @@ class Prediction(Base):
 
 
 def init_db():
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception:
+        pass
 
 
 def get_db():

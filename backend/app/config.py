@@ -4,6 +4,7 @@ Contains settings, endpoints, circuit classifications, and model hyperparameters
 """
 
 import os
+import shutil
 from pathlib import Path
 
 # Project Roots
@@ -14,13 +15,28 @@ RAW_DATA_DIR = DATA_DIR / "raw"
 LOGS_DIR = DATA_DIR / "logs"
 MODELS_DIR = BACKEND_DIR / "models"
 
-# Ensure directories exist
-RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-LOGS_DIR.mkdir(parents=True, exist_ok=True)
-MODELS_DIR.mkdir(parents=True, exist_ok=True)
+# Ensure directories exist (safely catch read-only serverless filesystems)
+for d in (RAW_DATA_DIR, LOGS_DIR, MODELS_DIR):
+    try:
+        d.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
 
-# Database
-DB_PATH = Path(os.getenv("PACEIQ_DB_PATH", str(DATA_DIR / "paceiq.db")))
+# Database: In serverless environments (e.g. Vercel / AWS Lambda), the code directory is
+# read-only. We copy paceiq.db to /tmp so SQLite can open and query it with shared locks.
+SOURCE_DB_PATH = Path(os.getenv("PACEIQ_DB_PATH", str(DATA_DIR / "paceiq.db")))
+
+if (os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME")) and SOURCE_DB_PATH.exists():
+    TMP_DB_PATH = Path("/tmp/paceiq.db")
+    if not TMP_DB_PATH.exists():
+        try:
+            shutil.copy2(SOURCE_DB_PATH, TMP_DB_PATH)
+        except Exception:
+            pass
+    DB_PATH = TMP_DB_PATH if TMP_DB_PATH.exists() else SOURCE_DB_PATH
+else:
+    DB_PATH = SOURCE_DB_PATH
+
 _RAW_DB_URL = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
 if _RAW_DB_URL.startswith("postgres://"):
     _RAW_DB_URL = _RAW_DB_URL.replace("postgres://", "postgresql://", 1)
